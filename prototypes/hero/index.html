@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<!--
+  Hero Prototype — Portfolio v2 ("In Focus")
+  Single, dependency-free file. Inline CSS + vanilla JS. No build step, no npm.
+  Governed by: docs/v2/02-identity-first.md, 03-interaction-philosophy.md, 04-visual-identity.md
+  Spec: .kiro/specs/hero-prototype/
+
+  Progressive enhancement contract:
+    - With NO JavaScript: full identity content + the real GitHub link render statically (see <noscript> path / default styles).
+    - The <html> element gets class "js" synchronously (head script) so the arrival pre-state
+      is applied BEFORE first paint (avoids a flash of the final state).
+    - prefers-reduced-motion: no resolve, static background, native cursor, content crisp from frame 1.
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Mohd Alsaf</title>
+  <meta name="description" content="Mohd Alsaf — turning ideas into working things, figured out in the open." />
+
+  <!-- Runs before first paint: mark JS-capable so CSS can set the arrival pre-state without a flash. -->
+  <script>document.documentElement.className = "js";</script>
+
+  <!-- Fonts via free CDN (Fontshare + Google) with robust system fallbacks. Content never blocks on these. -->
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" />
+
+  <style>
+    /* ============================================================
+       DESIGN TOKENS — single source of truth, two themes.
+       Light "Paper & Ink" is the default (:root). Dark "Graphite"
+       applies via prefers-color-scheme (no explicit choice) OR an
+       explicit [data-theme] set by the toggle.
+       Color is RATIONED: mostly ink-on-surface; accent only resolves.
+       ============================================================ */
+    :root {
+      --surface: #F4F1EA;   /* warm bone */
+      --text:    #16161A;   /* ink */
+      --muted:   #6B6B72;   /* AA on surface (~4.7:1) */
+      --hairline: rgba(22, 22, 26, 0.12);  /* ink @ ~12% */
+      --hairline-strong: rgba(22, 22, 26, 0.20); /* local contrast near pointer */
+      --tick:     rgba(22, 22, 26, 0.14);  /* ink @ ~14% */
+      --accent:   #2A46E0;  /* focus-blue signal (resolve target only) */
+      --accent-ink: #2A46E0; /* link text — 6.1:1 on bone (AA) */
+      --focus-ring: #2A46E0;
+
+      /* motion budget (enforced constants, mirrored in JS) */
+      --arrival-ms: 720ms;
+      --arrival-ease: cubic-bezier(0.16, 1, 0.3, 1); /* ease-out, settles exactly, no overshoot */
+    }
+
+    /* Dark tokens: applied when the system prefers dark AND the user hasn't explicitly chosen light. */
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --surface: #17181C;  /* warm graphite */
+        --text:    #EDE9E0;  /* soft bone */
+        --muted:   #9A9BA8;  /* AA on graphite (~6.4:1) */
+        --hairline: rgba(237, 233, 224, 0.12);
+        --hairline-strong: rgba(237, 233, 224, 0.22);
+        --tick:     rgba(237, 233, 224, 0.14);
+        --accent:   #2A46E0;   /* reads luminous on graphite */
+        --accent-ink: #8AA0FF; /* link text — 7.2:1 on graphite (AA) */
+        --focus-ring: #8AA0FF;
+      }
+    }
+    /* Explicit dark (toggle overrides system light). */
+    [data-theme="dark"] {
+      --surface: #17181C;
+      --text:    #EDE9E0;
+      --muted:   #9A9BA8;
+      --hairline: rgba(237, 233, 224, 0.12);
+      --hairline-strong: rgba(237, 233, 224, 0.22);
+      --tick:     rgba(237, 233, 224, 0.14);
+      --accent:   #2A46E0;
+      --accent-ink: #8AA0FF;
+      --focus-ring: #8AA0FF;
+    }
+    /* Explicit light (toggle overrides system dark). */
+    [data-theme="light"] {
+      --surface: #F4F1EA;
+      --text:    #16161A;
+      --muted:   #6B6B72;
+      --hairline: rgba(22, 22, 26, 0.12);
+      --hairline-strong: rgba(22, 22, 26, 0.20);
+      --tick:     rgba(22, 22, 26, 0.14);
+      --accent:   #2A46E0;
+      --accent-ink: #2A46E0;
+      --focus-ring: #2A46E0;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      background: var(--surface);
+      color: var(--text);
+      /* Voice = precise grotesque; crisp system fallback before webfont resolves (no layout block). */
+      font-family: "General Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      /* Matte surface: no glass, no gloss, no faux depth. */
+    }
+
+    /* Allow a little scroll so depth (subject recedes) can be felt; the hero itself is fixed. */
+    .scroll-spacer { height: 150vh; pointer-events: none; }
+
+    /* ============================================================
+       BACKGROUND — still by default, structural not scenic.
+       Layer 1: faint static hairline grid (the ONE parallax layer).
+       Layer 2: a local-contrast copy revealed only near the pointer.
+       Both use --hairline; ~12–14% opacity; no animation at idle.
+       ============================================================ */
+    .viewport {
+      position: fixed;
+      inset: 0;
+      overflow: hidden;
+      display: grid;
+      place-items: center;
+    }
+
+    .field, .field-near {
+      position: absolute;
+      /* oversized so parallax translation never reveals an edge */
+      inset: -40px;
+      pointer-events: none;
+      background-image:
+        repeating-linear-gradient(to right, var(--hairline) 0, var(--hairline) 1px, transparent 1px, transparent 96px),
+        repeating-linear-gradient(to bottom, var(--hairline) 0, var(--hairline) 1px, transparent 1px, transparent 96px);
+      background-position: center center;
+      will-change: transform;
+    }
+    /* Local contrast bump: same grid, stronger, masked to a soft disc that tracks the pointer. */
+    .field-near {
+      background-image:
+        repeating-linear-gradient(to right, var(--hairline-strong) 0, var(--hairline-strong) 1px, transparent 1px, transparent 96px),
+        repeating-linear-gradient(to bottom, var(--hairline-strong) 0, var(--hairline-strong) 1px, transparent 1px, transparent 96px);
+      opacity: 0;
+      -webkit-mask-image: radial-gradient(circle 170px at var(--mx, -300px) var(--my, -300px), #000 0%, rgba(0,0,0,0.35) 55%, transparent 72%);
+              mask-image: radial-gradient(circle 170px at var(--mx, -300px) var(--my, -300px), #000 0%, rgba(0,0,0,0.35) 55%, transparent 72%);
+      transition: opacity 120ms linear; /* fades in <100ms-ish when pointer present, out when it leaves */
+    }
+
+    /* Fine tick marks — a machined baseline detail beneath the subject. */
+    .ticks {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      pointer-events: none;
+      opacity: 0.9;
+    }
+    .ticks .tick { width: 1px; height: 7px; background: var(--tick); }
+    .ticks .tick.major { height: 12px; }
+
+    /* ============================================================
+       SUBJECT — the center of attention.
+       ============================================================ */
+    .stage {
+      position: relative;
+      z-index: 2;
+      max-width: min(880px, 90vw);
+      padding: 24px;
+      text-align: left;
+      will-change: transform, opacity;
+    }
+
+    .kicker {
+      font-family: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin: 0 0 18px 2px;
+    }
+
+    h1.name {
+      /* Display comes from SIZE + TIGHT TRACKING, never a third font. */
+      font-family: "General Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      font-weight: 600;
+      font-size: clamp(44px, 9vw, 104px);
+      line-height: 0.98;
+      letter-spacing: -0.03em;
+      margin: 0;
+      color: var(--text);
+    }
+
+    .positioning {
+      font-family: "General Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      font-weight: 400;
+      font-size: clamp(17px, 2.4vw, 23px);
+      line-height: 1.4;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      max-width: 34ch;
+      margin: 22px 0 30px 2px;
+    }
+
+    .meta {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin: 0 0 26px 2px;
+    }
+    .meta .line {
+      font-family: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      font-size: 13px;
+      letter-spacing: 0.01em;
+      color: var(--muted);
+      margin: 0;
+    }
+    /* honest "alive" state dot — a single sparse tick, not decoration */
+    .meta .status::before {
+      content: "";
+      display: inline-block;
+      width: 6px; height: 6px;
+      margin-right: 9px;
+      border-radius: 1px;               /* near-square, small radius */
+      background: var(--accent);        /* the one rationed signal */
+      transform: translateY(-1px);
+    }
+
+    /* The single real link. Accent lives here (where attention resolves). */
+    a.gh {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      font-family: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+      font-size: 14px;
+      color: var(--accent-ink);
+      text-decoration: none;
+      padding: 8px 12px;
+      margin-left: -2px;
+      border: 1px solid var(--hairline);
+      border-radius: 3px;               /* precise near-square */
+      background: transparent;          /* matte — no fill, no shadow */
+      transition: border-color 120ms linear, color 120ms linear;
+    }
+    a.gh .arrow { transition: transform 140ms var(--arrival-ease); }
+    a.gh:hover { border-color: var(--accent); }
+    a.gh:hover .arrow { transform: translateX(3px); }  /* proportionate, exact-settle, transform only */
+
+    /* Exact, visible focus indicator (hairline/accent — never a default glow). */
+    :focus-visible {
+      outline: 2px solid var(--focus-ring);
+      outline-offset: 3px;
+      border-radius: 2px;
+    }
+    /* Only suppress the default ring where we draw an equal, exact one. */
+    a.gh:focus-visible { outline-offset: 4px; }
+
+    /* ============================================================
+       THEME TOGGLE — small, precise. Swaps token set only.
+       ============================================================ */
+    .toggle {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 5;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 7px 11px;
+      background: transparent;
+      color: var(--muted);
+      border: 1px solid var(--hairline);
+      border-radius: 3px;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: border-color 120ms linear, color 120ms linear;
+    }
+    .toggle:hover { border-color: var(--accent); color: var(--text); }
+    /* a half-filled square = the light/dark glyph (matte, no gloss) */
+    .toggle .glyph {
+      width: 13px; height: 13px;
+      border: 1px solid currentColor;
+      border-radius: 2px;
+      background: linear-gradient(90deg, currentColor 0 50%, transparent 50% 100%);
+    }
+
+    /* ============================================================
+       SCROLL CUE — a minimal, honest NAVIGATION target near the
+       bottom edge. It exists only because real scroll depth exists
+       (subject recedes / field deepens). Mono, low-opacity, at rest;
+       fades out once you actually start scrolling. data-cursor="nav".
+       ============================================================ */
+    .scroll-cue {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      transform: translateX(-50%);
+      z-index: 5;
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      background: transparent;
+      border: 0;
+      color: var(--muted);
+      opacity: 0;                 /* hidden until JS reveals it at rest (post-arrival) */
+      pointer-events: none;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 10px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity 260ms linear, color 120ms linear;
+    }
+    .scroll-cue.ready { opacity: 0.5; pointer-events: auto; }
+    .scroll-cue.ready:hover { opacity: 0.92; color: var(--text); }
+    .scroll-cue .sc-chev {
+      width: 8px; height: 8px;
+      border-right: 1px solid currentColor;
+      border-bottom: 1px solid currentColor;
+      transform: rotate(45deg);
+    }
+    .scroll-cue.hide { opacity: 0; pointer-events: none; }
+
+    /* ============================================================
+       CURSOR STATE PREVIEW PANEL — review aid behind ?cursor=demo
+       (mirrors the ?mark=on pattern). Lets the user feel every state
+       on demand. Hidden by default; hidden under reduced-motion/touch.
+       ============================================================ */
+    .cursor-demo {
+      position: fixed;
+      left: 18px;
+      bottom: 18px;
+      z-index: 6;
+      display: none;
+      width: 216px;
+      padding: 13px;
+      background: var(--surface);
+      border: 1px solid var(--hairline);
+      border-radius: 4px;
+    }
+    .cursor-demo.show { display: block; }
+    .cursor-demo .cd-title {
+      margin: 0 0 10px;
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .cursor-demo .cd-grid { display: flex; flex-direction: column; gap: 6px; }
+    .cursor-demo .cd-zone {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 9px 10px;
+      border: 1px dashed var(--hairline);
+      border-radius: 3px;
+      background: transparent;
+      color: var(--text);
+      font-family: "JetBrains Mono", ui-monospace, monospace;
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      text-align: left;
+    }
+    .cursor-demo .cd-zone .cd-tag { color: var(--muted); font-size: 9px; letter-spacing: 0.08em; }
+    .cursor-demo .cd-load { border-style: solid; border-color: var(--hairline-strong); cursor: pointer; }
+    .cursor-demo .cd-load:hover { border-color: var(--accent); }
+
+    /* ============================================================
+       FOCUS MARK (PROBATIONARY) — registration/viewfinder brackets.
+       Default OFF after kill-review (see JS + report). Enable live
+       comparison with ?mark=on. When enabled, brackets converge onto
+       the subject during arrival and tighten on interactive hover.
+       ============================================================ */
+    .focus-mark {
+      position: absolute;
+      z-index: 1;
+      inset: -18px -14px;
+      pointer-events: none;
+      display: none; /* toggled to block by JS when enabled */
+    }
+    .focus-mark .corner {
+      position: absolute;
+      width: 20px; height: 20px;
+      border: 1.5px solid var(--accent);
+      opacity: 0.85;
+    }
+    .focus-mark .tl { top: 0; left: 0; border-right: 0; border-bottom: 0; }
+    .focus-mark .tr { top: 0; right: 0; border-left: 0; border-bottom: 0; }
+    .focus-mark .bl { bottom: 0; left: 0; border-right: 0; border-top: 0; }
+    .focus-mark .br { bottom: 0; right: 0; border-left: 0; border-top: 0; }
+
+    /* ============================================================
+       CURSOR INSTRUMENT — custom precise indicator.
+       Hidden by default; enabled by JS only for fine pointers with
+       motion allowed. Native cursor everywhere else.
+       ============================================================ */
+    .cursor {
+      position: fixed;
+      top: 0; left: 0;
+      z-index: 20;
+      width: 22px; height: 22px;
+      margin: -11px 0 0 -11px;
+      pointer-events: none;
+      opacity: 0;
+      will-change: transform;
+    }
+    body.custom-cursor { cursor: none; }
+    /* When the custom instrument is on, suppress ALL native cursors honestly. */
+    body.custom-cursor * { cursor: none !important; }
+
+    .cursor .ring {
+      position: absolute; inset: 0;
+      border: 1px solid var(--text);
+      border-radius: 2px;                 /* near-square instrument, not a blob */
+      opacity: 0.55;
+      transform: scale(1);
+      transform-origin: center center;
+      /* transform/opacity/border-color only — settles exactly, no bounce */
+      transition: transform 120ms var(--arrival-ease), border-color 120ms linear, opacity 120ms linear;
+    }
+    .cursor .dot {
+      position: absolute; top: 50%; left: 50%;
+      width: 2px; height: 2px; margin: -1px 0 0 -1px;
+      background: var(--text);
+      transition: background-color 120ms linear, opacity 120ms linear;
+    }
+    /* SCAN sweep — a single, non-looping pass across the framed text (transform/opacity only). */
+    .cursor .scanline {
+      position: absolute; top: 3px; bottom: 3px; left: 50%;
+      width: 1px; margin-left: -0.5px;
+      background: var(--text);
+      opacity: 0;
+      pointer-events: none;
+    }
+    .cursor .scanline.run { animation: cursor-sweep 520ms var(--arrival-ease) 1 forwards; }
+    @keyframes cursor-sweep {
+      0%   { opacity: 0;   transform: translateX(-17px) scaleY(0.55); }
+      18%  { opacity: 0.65; }
+      82%  { opacity: 0.65; }
+      100% { opacity: 0;   transform: translateX(17px) scaleY(0.55); }
+    }
+    /* NAV — a small downward chevron directional indicator. */
+    .cursor .chev {
+      position: absolute; left: 50%; top: 100%;
+      width: 6px; height: 6px; margin: 3px 0 0 -3px;
+      border-right: 1.5px solid var(--text);
+      border-bottom: 1.5px solid var(--text);
+      transform: rotate(45deg) scale(0.4);
+      transform-origin: center;
+      opacity: 0;
+      transition: opacity 120ms linear, transform 140ms var(--arrival-ease);
+    }
+    /* LOADING — one border segment; sweeps ONLY while a real action is pending. */
+    .cursor .loader {
+      position: absolute; inset: -3px;
+      border: 1px solid transparent;
+      border-top-color: var(--accent);
+      border-radius: 3px;
+      opacity: 0;
+    }
+
+    /* ---- STATE MACHINE (each state = a distinct, intentional variant of the square) ---- */
+    /* 1. INSPECT (default): the baseline square + center dot defined above. Calm. */
+
+    /* 2. SCAN (over readable subject text): elongate to "frame" the line. Neutral — NOT clickable. */
+    .cursor.is-scan .ring { transform: scaleX(1.9) scaleY(1.06); opacity: 0.7; border-color: var(--text); }
+    .cursor.is-scan .dot { opacity: 0; }
+
+    /* 3. CLICKABLE (real links/buttons): tighten + adopt the accent. "You can act." */
+    .cursor.is-clickable .ring { transform: scale(0.76); border-color: var(--accent); opacity: 0.95; }
+    .cursor.is-clickable .dot { background: var(--accent); }
+
+    /* 4. NAVIGATION (moves you through the experience): directional chevron, neutral square. */
+    .cursor.is-nav .ring { transform: scaleY(1.14); opacity: 0.78; }
+    .cursor.is-nav .chev { opacity: 0.9; transform: rotate(45deg) scale(1); }
+
+    /* 5a. DRAG grab (hover over draggable empty field): open / movable. */
+    .cursor.is-grab .ring { transform: scale(1.18); opacity: 0.5; border-color: var(--text); }
+    .cursor.is-grab .dot { opacity: 0.5; }
+
+    /* 6. LOADING (transient, real pending action only): a single border segment sweeps. */
+    .cursor.is-loading .ring { opacity: 0.28; transform: scale(1); }
+    .cursor.is-loading .dot { opacity: 0; }
+    .cursor.is-loading .loader { opacity: 1; animation: cursor-spin 720ms linear infinite; }
+    @keyframes cursor-spin { to { transform: rotate(360deg); } }
+
+    /* 5b. GRABBING / PRESS — crisp tighten while the pointer is held; settles exactly (no bounce).
+       Declared LAST so it overrides the state scale during an active grip/press. */
+    .cursor.is-press .ring { transform: scale(0.72); opacity: 1; }
+
+    /* ============================================================
+       CLICK REGISTRATION-SNAP — crisp crosshair that settles exactly.
+       transform/opacity only; no bounce; removed after it settles.
+       ============================================================ */
+    .snap {
+      position: fixed;
+      z-index: 15;
+      width: 26px; height: 26px;
+      margin: -13px 0 0 -13px;
+      pointer-events: none;
+    }
+    .snap::before, .snap::after {
+      content: ""; position: absolute; background: var(--accent);
+    }
+    .snap::before { left: 50%; top: 0; width: 1px; height: 100%; margin-left: -0.5px; }
+    .snap::after  { top: 50%; left: 0; height: 1px; width: 100%; margin-top: -0.5px; }
+    .snap.play {
+      animation: snap var(--arrival-ease) 260ms 1 forwards;
+    }
+    @keyframes snap {
+      0%   { opacity: 0; transform: scale(1.18); }
+      35%  { opacity: 1; transform: scale(1.0); }  /* lands crisp, no overshoot past 1.0 */
+      100% { opacity: 0; transform: scale(1.0); }
+    }
+
+    /* ============================================================
+       ARRIVAL RESOLVE — the ONE permitted "hello".
+       Pre-state applied only when JS is present (html.js), so a
+       no-JS visitor sees content immediately. Ease-out ~720ms,
+       staggered, settles EXACTLY (transform/opacity only). Runs once.
+       ============================================================ */
+    html.js .resolve {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    html.js.arrival-play .resolve {
+      opacity: 1;
+      transform: none;
+      transition: opacity var(--arrival-ms) var(--arrival-ease),
+                  transform var(--arrival-ms) var(--arrival-ease);
+    }
+    html.js.arrival-play .r1 { transition-delay: 0ms; }
+    html.js.arrival-play .r2 { transition-delay: 90ms; }
+    html.js.arrival-play .r3 { transition-delay: 150ms; }
+    html.js.arrival-play .r4 { transition-delay: 200ms; }
+    html.js.arrival-play .r5 { transition-delay: 260ms; }
+
+    /* ============================================================
+       REDUCED MOTION — skip resolve, static field, native cursor,
+       content crisp from first frame. Also kills the snap animation.
+       ============================================================ */
+    @media (prefers-reduced-motion: reduce) {
+      html.js .resolve { opacity: 1 !important; transform: none !important; transition: none !important; }
+      .field-near { transition: none !important; }
+      .snap { display: none !important; }
+      .cursor { display: none !important; }
+      .cursor .scanline, .cursor .loader { animation: none !important; }
+      body.custom-cursor, body.custom-cursor * { cursor: auto !important; }
+      a.gh .arrow, a.gh { transition: none !important; }
+      /* the state-preview panel is a motion demo — never show it under reduced-motion */
+      .cursor-demo { display: none !important; }
+      /* scroll cue remains as a static, honest affordance (no fade motion) */
+      .scroll-cue { transition: none !important; }
+    }
+
+    @media (max-width: 560px) {
+      .stage { padding: 18px; }
+      .toggle { top: 14px; right: 14px; }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- BACKGROUND: still structural field + local-contrast layer + machined tick baseline -->
+  <div class="viewport" aria-hidden="true">
+    <div class="field" id="field"></div>
+    <div class="field-near" id="fieldNear"></div>
+
+    <!-- SUBJECT -->
+    <main class="stage" id="stage">
+      <!-- Probationary focus mark lives here so it can frame the subject; hidden unless ?mark=on -->
+      <div class="focus-mark" id="focusMark">
+        <span class="corner tl"></span><span class="corner tr"></span>
+        <span class="corner bl"></span><span class="corner br"></span>
+      </div>
+
+      <p class="kicker resolve r1">Portfolio</p>
+
+      <h1 class="name resolve r2" id="subjectName" data-cursor="scan">Mohd Alsaf</h1>
+
+      <!-- PROVISIONAL — pending Alsaf sign-off. Do not treat as final approved copy. -->
+      <p class="positioning resolve r3" data-cursor="scan">I turn ideas into working things — and I figure them out in the open.</p>
+
+      <div class="meta">
+        <p class="line resolve r4">2nd-year CSE · Pune · exploring AI</p>
+        <p class="line status resolve r4">Currently building — CampusSwap AI</p>
+      </div>
+
+      <a class="gh resolve r5" id="ghLink" data-cursor="clickable" href="https://github.com/sayyedmohdalsaf06-afk" rel="me noopener">
+        <span>github.com/sayyedmohdalsaf06-afk</span>
+        <span class="arrow" aria-hidden="true">&rarr;</span>
+      </a>
+    </main>
+
+    <div class="ticks" id="ticks" aria-hidden="true">
+      <span class="tick"></span><span class="tick"></span><span class="tick major"></span>
+      <span class="tick"></span><span class="tick"></span><span class="tick major"></span>
+      <span class="tick"></span><span class="tick"></span><span class="tick major"></span>
+      <span class="tick"></span><span class="tick"></span>
+    </div>
+  </div>
+
+  <!-- Small precise theme toggle -->
+  <button class="toggle" id="themeToggle" type="button" data-cursor="clickable" aria-pressed="false" aria-label="Toggle light and dark theme">
+    <span class="glyph" aria-hidden="true"></span>
+    <span id="themeLabel">Theme</span>
+  </button>
+
+  <!-- Scroll cue — honest NAVIGATION target (real scroll depth exists). Native button = keyboard-operable.
+       Revealed at rest by JS (.ready) after arrival; JS-only affordance so it stays hidden with no JS. -->
+  <button class="scroll-cue" id="scrollCue" type="button" data-cursor="nav" aria-label="Scroll to explore">
+    <span class="sc-label">Scroll</span>
+    <span class="sc-chev" aria-hidden="true"></span>
+  </button>
+
+  <!-- Custom cursor instrument (enabled by JS only for fine pointers + motion allowed).
+       Six states are distinct variants of this one square: ring/dot (inspect, scan, clickable, grab),
+       chev (nav), scanline (scan sweep), loader (loading). -->
+  <div class="cursor" id="cursor" aria-hidden="true">
+    <span class="ring"></span><span class="dot"></span>
+    <span class="scanline" aria-hidden="true"></span>
+    <span class="chev" aria-hidden="true"></span>
+    <span class="loader" aria-hidden="true"></span>
+  </div>
+
+  <!-- CURSOR STATE PREVIEW — only shown with ?cursor=demo (and not under reduced-motion/touch). -->
+  <aside class="cursor-demo" id="cursorDemo" aria-hidden="true">
+    <p class="cd-title">Cursor · state preview</p>
+    <div class="cd-grid">
+      <div class="cd-zone" data-cursor="inspect"><span>Inspect</span><span class="cd-tag">default</span></div>
+      <div class="cd-zone" data-cursor="scan"><span>Scan</span><span class="cd-tag">reading</span></div>
+      <div class="cd-zone" data-cursor="clickable"><span>Clickable</span><span class="cd-tag">act</span></div>
+      <div class="cd-zone" data-cursor="nav"><span>Navigation</span><span class="cd-tag">move</span></div>
+      <div class="cd-zone" data-cursor="drag"><span>Drag</span><span class="cd-tag">grab</span></div>
+      <button class="cd-zone cd-load" id="cdLoad" type="button" data-cursor="clickable"><span>Loading</span><span class="cd-tag">trigger &rarr;</span></button>
+    </div>
+  </aside>
+
+  <!-- Enables scroll so the "subject recedes / field deepens" depth can be felt -->
+  <div class="scroll-spacer" aria-hidden="true"></div>
+
+  <script>
+  (function () {
+    "use strict";
+
+    // ---- Environment detection -------------------------------------------
+    var docEl = document.documentElement;
+    var body  = document.body;
+    var mqReduce = window.matchMedia("(prefers-reduced-motion: reduce)");
+    var mqDark   = window.matchMedia("(prefers-color-scheme: dark)");
+    var mqFine   = window.matchMedia("(hover: hover) and (pointer: fine)");
+
+    function reduced() { return mqReduce.matches; }
+
+    // ---- Motion budget (mirrors CSS constants) ---------------------------
+    var MOTION = {
+      arrivalMs: 720,        // 600..900, ease-out, settle exact
+      feedbackMaxMs: 100,    // all intent-feedback begins < 100ms
+      parallaxMaxPx: 4,      // small, single structural layer
+      loops: 0               // no looping/ambient/autonomous motion
+    };
+
+    // ======================================================================
+    // THEME CONTROLLER — initial = prefers-color-scheme; toggle swaps tokens only.
+    // ======================================================================
+    var toggleBtn = document.getElementById("themeToggle");
+    var themeLabel = document.getElementById("themeLabel");
+
+    function effectiveTheme() {
+      var explicit = docEl.getAttribute("data-theme");
+      if (explicit) return explicit;
+      return mqDark.matches ? "dark" : "light";
+    }
+    function syncToggleUI() {
+      var t = effectiveTheme();
+      themeLabel.textContent = (t === "dark") ? "Dark" : "Light";
+      toggleBtn.setAttribute("aria-pressed", t === "dark" ? "true" : "false");
+    }
+    toggleBtn.addEventListener("click", function () {
+      var next = (effectiveTheme() === "dark") ? "light" : "dark";
+      docEl.setAttribute("data-theme", next); // swaps token set only
+      syncToggleUI();
+    });
+    // Keep the label honest if the OS theme changes while no explicit choice is set.
+    if (mqDark.addEventListener) {
+      mqDark.addEventListener("change", function () {
+        if (!docEl.getAttribute("data-theme")) syncToggleUI();
+      });
+    }
+    syncToggleUI();
+
+    // ======================================================================
+    // ARRIVAL CONTROLLER — one resolve, then stillness. Skipped under reduced-motion.
+    // ======================================================================
+    function playArrival() {
+      if (reduced()) return; // content already crisp from frame 1 (CSS)
+      // Two rAFs guarantee the pre-state has painted before we transition to final.
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          docEl.classList.add("arrival-play");
+        });
+      });
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", playArrival, { once: true });
+    } else {
+      playArrival();
+    }
+
+    // ======================================================================
+    // SHARED STATE — one rAF loop drives EVERYTHING that moves per-frame:
+    // background parallax settle, subject recede, grid drag pan/spring, and the
+    // cursor follow. Nothing animates per-frame outside this loop. The loop runs
+    // ONLY while something is settling, then stops (idle = still, no autonomous motion).
+    // (The scan sweep + loading segment are one-shot / pending-gated CSS animations —
+    //  they are not per-frame JS, so they don't reopen this loop.)
+    // ======================================================================
+    var field    = document.getElementById("field");
+    var fieldNear = document.getElementById("fieldNear");
+    var stage    = document.getElementById("stage");
+    var ticks    = document.getElementById("ticks");
+    var viewport = document.querySelector(".viewport");
+
+    var cursor  = document.getElementById("cursor");
+    var scanline = cursor.querySelector(".scanline");
+    var ghLink  = document.getElementById("ghLink");
+    var scrollCue = document.getElementById("scrollCue");
+
+    // Parallax (pointer-driven, bounded) + scroll offset.
+    var targetX = 0, targetY = 0;   // parallax target (px)
+    var curX = 0, curY = 0;         // current parallax (px), lerped
+    var scrollY = 0;                // latest scroll offset
+
+    // Grid drag: pan within a small bounded range; spring back to baseline on release.
+    var DRAG_MAX = 48;              // px — small, bounded, reversible
+    var dragging = false;
+    var dragStartX = 0, dragStartY = 0;
+    var dragTargetX = 0, dragTargetY = 0;  // where the pan wants to be (0 = baseline)
+    var dragCurX = 0, dragCurY = 0;        // current pan, lerped on release
+
+    // Cursor follow.
+    var cursorEnabled = mqFine.matches && !reduced();
+    var cx = 0, cy = 0, tx = 0, ty = 0;
+    var lastX = -1, lastY = -1;
+
+    var rafId = null;
+    var idleTimer = null;
+
+    function clamp(v, lo, hi) { return v < lo ? lo : (v > hi ? hi : v); }
+
+    function composeTransforms() {
+      // Field: pointer parallax + grid drag pan + slow downward drift on scroll (=> depth).
+      var fieldX = curX + dragCurX;
+      var fieldY = curY + dragCurY + scrollY * 0.06;
+      field.style.transform = "translate3d(" + fieldX.toFixed(2) + "px," + fieldY.toFixed(2) + "px,0)";
+      fieldNear.style.transform = field.style.transform;
+
+      // Subject recedes: lifts slightly, shrinks a touch, and fades — differential from the field.
+      var recede = Math.min(scrollY, 500);
+      var stScale = 1 - recede * 0.00024;
+      var stY = -recede * 0.10;
+      var stOpacity = 1 - recede * 0.0011;
+      stage.style.transform = "translate3d(0," + stY.toFixed(2) + "px,0) scale(" + stScale.toFixed(4) + ")";
+      stage.style.opacity = Math.max(0.35, stOpacity).toFixed(3);
+      ticks.style.transform = "translateX(-50%) translateY(" + (scrollY * 0.03).toFixed(2) + "px)";
+    }
+
+    // ----- THE SINGLE SHARED rAF LOOP -------------------------------------
+    function frame() {
+      var active = false;
+
+      // (a) Cursor: immediate, precise follow (no lazy trail).
+      if (cursorEnabled) {
+        cx += (tx - cx) * 0.35;
+        cy += (ty - cy) * 0.35;
+        if (Math.abs(tx - cx) > 0.1 || Math.abs(ty - cy) > 0.1) active = true;
+        else { cx = tx; cy = ty; }
+        cursor.style.transform = "translate3d(" + cx.toFixed(2) + "px," + cy.toFixed(2) + "px,0)";
+      }
+
+      // (b) Parallax: lerp toward target, settle exactly.
+      curX += (targetX - curX) * 0.12;
+      curY += (targetY - curY) * 0.12;
+      if (Math.abs(targetX - curX) > 0.03 || Math.abs(targetY - curY) > 0.03) active = true;
+      else { curX = targetX; curY = targetY; }
+
+      // (c) Grid drag: 1:1 while gripped; spring back to baseline on release (exact settle, no bounce).
+      if (dragging) {
+        active = true; // hold the loop open while the grid is held
+      } else {
+        dragCurX += (dragTargetX - dragCurX) * 0.16;
+        dragCurY += (dragTargetY - dragCurY) * 0.16;
+        if (Math.abs(dragTargetX - dragCurX) > 0.05 || Math.abs(dragTargetY - dragCurY) > 0.05) active = true;
+        else { dragCurX = dragTargetX; dragCurY = dragTargetY; }
+      }
+
+      composeTransforms();
+
+      if (active) rafId = requestAnimationFrame(frame);
+      else rafId = null; // idle: loop stops, scene is still
+    }
+    function kick() { if (rafId == null) rafId = requestAnimationFrame(frame); }
+
+    // ======================================================================
+    // CURSOR STATE MACHINE — six distinct, intentional variants of the square.
+    // A state attaches ONLY to a genuine target (data-cursor on real elements,
+    // or truly empty draggable field). It NEVER signals an affordance that isn't real.
+    // ======================================================================
+    // Real, genuinely-clickable magnetism targets only (the "you can act" set).
+    var magnetTargets = [ghLink, toggleBtn, scrollCue];
+    var currentState = null;
+    var loadingActive = false;
+
+    // The empty grid field = anything that is background (not the subject, not interactive).
+    function isEmptyField(el) {
+      return el === viewport || el === field || el === fieldNear || el === ticks || el === document.body;
+    }
+
+    function resolveState(x, y) {
+      if (loadingActive) return "loading";      // transient, pending action wins
+      if (dragging) return "drag";              // gripping the grid
+      var el = document.elementFromPoint(x, y); // cursor has pointer-events:none, so it's ignored
+      if (el) {
+        var t = el.closest ? el.closest("[data-cursor]") : null;
+        if (t) {
+          var v = t.getAttribute("data-cursor");
+          if (v === "clickable" || v === "scan" || v === "nav" || v === "drag" ||
+              v === "loading" || v === "inspect") return v;
+        }
+        if (isEmptyField(el)) return "drag";    // grab affordance over the real draggable field
+      }
+      return "inspect";
+    }
+
+    function runSweep() {
+      // Re-trigger the one-shot scan sweep on each fresh enter (non-looping).
+      scanline.classList.remove("run");
+      void scanline.offsetWidth; // force reflow so the animation can replay
+      scanline.classList.add("run");
+    }
+
+    function setState(s) {
+      if (s === currentState) return;
+      currentState = s;
+      cursor.classList.remove("is-scan", "is-clickable", "is-nav", "is-grab", "is-loading");
+      if (s === "scan")       { cursor.classList.add("is-scan"); runSweep(); }
+      else if (s === "clickable") cursor.classList.add("is-clickable");
+      else if (s === "nav")       cursor.classList.add("is-nav");
+      else if (s === "drag")      cursor.classList.add("is-grab");
+      else if (s === "loading")   cursor.classList.add("is-loading");
+      // "inspect" => no modifier class (baseline square + dot)
+    }
+
+    function nearestMagnet(x, y) {
+      var best = null, bestD = 90; // magnetism engages only within a small radius
+      for (var i = 0; i < magnetTargets.length; i++) {
+        var el = magnetTargets[i];
+        if (!el) continue;
+        var r = el.getBoundingClientRect();
+        var mxp = r.left + r.width / 2, myp = r.top + r.height / 2;
+        var dx = Math.max(r.left - x, 0, x - r.right);
+        var dy = Math.max(r.top - y, 0, y - r.bottom);
+        var d = Math.hypot(dx, dy);
+        if (d < bestD) { bestD = d; best = { el: el, cxp: mxp, cyp: myp, d: d }; }
+      }
+      return best;
+    }
+
+    // ======================================================================
+    // UNIFIED POINTER MOVE — parallax + local contrast + drag pan + cursor + state.
+    // ======================================================================
+    function onPointerMove(e) {
+      if (reduced()) return; // static field + native cursor under reduced-motion
+
+      // Parallax target (bounded to the motion budget).
+      var nx = (e.clientX / window.innerWidth) - 0.5;
+      var ny = (e.clientY / window.innerHeight) - 0.5;
+      targetX = clamp(nx * MOTION.parallaxMaxPx * 2, -MOTION.parallaxMaxPx, MOTION.parallaxMaxPx);
+      targetY = clamp(ny * MOTION.parallaxMaxPx * 2, -MOTION.parallaxMaxPx, MOTION.parallaxMaxPx);
+
+      // Local hairline contrast follows the pointer (begins immediately).
+      fieldNear.style.setProperty("--mx", e.clientX + "px");
+      fieldNear.style.setProperty("--my", e.clientY + "px");
+      fieldNear.style.opacity = "1";
+
+      // Grid drag: 1:1 pan within a bounded range while gripped.
+      if (dragging) {
+        dragTargetX = clamp(e.clientX - dragStartX, -DRAG_MAX, DRAG_MAX);
+        dragTargetY = clamp(e.clientY - dragStartY, -DRAG_MAX, DRAG_MAX);
+        dragCurX = dragTargetX; dragCurY = dragTargetY; // exact, no lag
+      }
+
+      // Cursor follow + magnetism (toward REAL clickable targets only) + state.
+      if (cursorEnabled) {
+        lastX = e.clientX; lastY = e.clientY;
+        tx = e.clientX; ty = e.clientY;
+        if (!dragging && !loadingActive) {
+          var st = resolveState(e.clientX, e.clientY);
+          if (st === "clickable") {
+            var m = nearestMagnet(e.clientX, e.clientY);
+            if (m) {
+              var pull = Math.max(0, 1 - m.d / 90) * 0.28;
+              tx = e.clientX + (m.cxp - e.clientX) * pull;
+              ty = e.clientY + (m.cyp - e.clientY) * pull;
+            }
+          }
+          setState(st);
+        }
+      }
+
+      kick();
+
+      // Revert to still baseline when input stops.
+      if (idleTimer) clearTimeout(idleTimer);
+      idleTimer = setTimeout(function () {
+        targetX = 0; targetY = 0;          // parallax returns to baseline
+        fieldNear.style.opacity = "0";     // local contrast fades out
+        kick();
+      }, 380);
+    }
+
+    function onScroll() {
+      if (reduced()) return; // reduced-motion: static, no recede/parallax
+      scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+      composeTransforms();
+      // Scroll cue is honest: it retires once you've begun to scroll.
+      if (scrollCue) scrollCue.classList.toggle("hide", scrollY > 40);
+    }
+
+    window.addEventListener("pointermove", onPointerMove, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
+    composeTransforms();
+
+    // ======================================================================
+    // CLICK REGISTRATION-SNAP — crisp crosshair at the click point, settles exactly.
+    // ======================================================================
+    function onPointerDownSnap(e) {
+      if (reduced()) return;
+      var snap = document.createElement("div");
+      snap.className = "snap play";
+      snap.style.left = e.clientX + "px";
+      snap.style.top = e.clientY + "px";
+      document.body.appendChild(snap);
+      snap.addEventListener("animationend", function () {
+        if (snap.parentNode) snap.parentNode.removeChild(snap);
+      });
+    }
+    window.addEventListener("pointerdown", onPointerDownSnap, { passive: true });
+
+    // ======================================================================
+    // GRID DRAG — the empty field is genuinely, reversibly draggable.
+    // Drag starts ONLY on empty background (never on text or interactive elements),
+    // so text selection and link clicks are never hijacked. Release springs back.
+    // ======================================================================
+    function onFieldPointerDown(e) {
+      if (!cursorEnabled || reduced()) return;   // native cursor / touch / reduced => no custom drag
+      if (e.button !== 0) return;                  // primary button only
+      var el = e.target;
+      // Never initiate on the subject, links, buttons, or any declared cursor target.
+      if (el.closest && (el.closest(".stage") || el.closest("a, button, [data-cursor]"))) return;
+      if (!isEmptyField(el)) return;               // must be the empty grid field
+      dragging = true;
+      dragStartX = e.clientX;
+      dragStartY = e.clientY;
+      body.classList.add("dragging");
+      setState("drag");
+      try { viewport.setPointerCapture(e.pointerId); } catch (_) {}
+      e.preventDefault(); // suppress accidental text selection / native image drag
+    }
+    function onDragEnd(e) {
+      if (!dragging) return;
+      dragging = false;
+      body.classList.remove("dragging");
+      dragTargetX = 0; dragTargetY = 0; // spring back to baseline (exact settle)
+      kick();
+      if (cursorEnabled) setState(resolveState(e.clientX, e.clientY));
+    }
+    if (viewport) {
+      viewport.addEventListener("pointerdown", onFieldPointerDown);
+      window.addEventListener("pointerup", onDragEnd, { passive: true });
+      window.addEventListener("pointercancel", onDragEnd, { passive: true });
+    }
+
+    // prevent text-selection flicker while panning the grid
+    var dragCss = document.createElement("style");
+    dragCss.textContent = "body.dragging{user-select:none;-webkit-user-select:none;}";
+    document.head.appendChild(dragCss);
+
+    // ======================================================================
+    // LOADING — shown ONLY while a real action is pending; ends when it ends.
+    // Wired to: (1) the real GitHub link (navigation pending), (2) the demo trigger.
+    // ======================================================================
+    function startLoading() {
+      loadingActive = true;
+      if (cursorEnabled) setState("loading");
+    }
+    function stopLoading() {
+      loadingActive = false;
+      if (cursorEnabled) setState(resolveState(lastX, lastY));
+    }
+    // Real pending action: leaving for GitHub. Loading persists until the page unloads.
+    // Only for a plain primary click (a modifier/aux click opens elsewhere — nothing is pending here),
+    // and a defensive fallback guarantees the state always ends (never an eternal spinner).
+    ghLink.addEventListener("click", function (e) {
+      if (!cursorEnabled) return;
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      startLoading();
+      setTimeout(function () { if (loadingActive) stopLoading(); }, 4000);
+    });
+
+    // ======================================================================
+    // CURSOR INSTRUMENT — enable / disable (fine pointers + motion allowed only).
+    // ======================================================================
+    function enableCursor() {
+      if (!cursorEnabled) return;
+      body.classList.add("custom-cursor");
+      cursor.style.opacity = "1";
+      window.addEventListener("pointerdown", function () { cursor.classList.add("is-press"); }, { passive: true });
+      window.addEventListener("pointerup", function () { cursor.classList.remove("is-press"); }, { passive: true });
+      // Any touch input => fall back to the native cursor honestly.
+      window.addEventListener("touchstart", disableCursor, { once: true, passive: true });
+    }
+    function disableCursor() {
+      cursorEnabled = false;
+      dragging = false;
+      body.classList.remove("custom-cursor", "dragging");
+      cursor.style.opacity = "0";
+      dragTargetX = 0; dragTargetY = 0; // release any pan
+      kick();
+    }
+    enableCursor();
+
+    // ======================================================================
+    // SCROLL CUE — a genuine NAVIGATION action (real scroll depth exists).
+    // ======================================================================
+    if (scrollCue) {
+      // Reveal at rest (fades in via CSS; instant under reduced-motion since its transition is off).
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () { scrollCue.classList.add("ready"); });
+      });
+      scrollCue.addEventListener("click", function () {
+        var behavior = reduced() ? "auto" : "smooth";
+        window.scrollTo({ top: Math.round(window.innerHeight * 0.9), left: 0, behavior: behavior });
+      });
+    }
+
+    // ======================================================================
+    // CURSOR STATE PREVIEW PANEL — review aid behind ?cursor=demo.
+    // Hidden by default; also hidden under reduced-motion/touch (needs custom cursor).
+    // ======================================================================
+    var qs = new URLSearchParams(window.location.search);
+    var demoEl = document.getElementById("cursorDemo");
+    if (demoEl && qs.get("cursor") === "demo" && cursorEnabled) {
+      demoEl.classList.add("show");
+      var loadBtn = document.getElementById("cdLoad");
+      if (loadBtn) {
+        loadBtn.addEventListener("click", function () {
+          // A bounded, self-resolving pending action so the loading state can be felt on demand.
+          startLoading();
+          setTimeout(stopLoading, 1400);
+        });
+      }
+    }
+
+    // ======================================================================
+    // FOCUS MARK CONTROLLER — ON PROBATION.
+    // Kill-review decision (see index-of-report / final report): the persistent
+    // viewfinder brackets around the NAME read as camera-UI/HUD (a) and compete
+    // with the name for attention (d). Per the kill-criteria, the mark is CUT by
+    // default. The fallback signature is: the arrival resolve + hairline/alignment
+    // precision + the cursor's attention. The mark remains one boolean away
+    // (?mark=on) so it can be A/B compared live before any final call.
+    // ======================================================================
+    var params = new URLSearchParams(window.location.search);
+    var FOCUS_MARK_ENABLED = params.get("mark") === "on" && !reduced();
+    var focusMark = document.getElementById("focusMark");
+
+    if (FOCUS_MARK_ENABLED) {
+      focusMark.style.display = "block";
+      // brackets converge onto the subject during arrival (transform/opacity only)
+      var corners = focusMark.querySelectorAll(".corner");
+      var offs = [[-14, -14], [14, -14], [-14, 14], [14, 14]];
+      for (var i = 0; i < corners.length; i++) {
+        corners[i].style.opacity = "0";
+        corners[i].style.transform = "translate(" + offs[i][0] + "px," + offs[i][1] + "px)";
+        corners[i].style.transition = "opacity var(--arrival-ms) var(--arrival-ease), transform var(--arrival-ms) var(--arrival-ease)";
+      }
+      requestAnimationFrame(function () {
+        requestAnimationFrame(function () {
+          for (var j = 0; j < corners.length; j++) {
+            corners[j].style.opacity = "0.85";
+            corners[j].style.transform = "translate(0,0)";
+          }
+        });
+      });
+      // tighten on interactive hover (subtle local reaction)
+      function tighten(on) { focusMark.style.transform = on ? "scale(0.985)" : "none"; }
+      ghLink.addEventListener("pointerenter", function () { tighten(true); });
+      ghLink.addEventListener("pointerleave", function () { tighten(false); });
+    }
+
+    // ======================================================================
+    // Respond to reduced-motion changes at runtime (honest, immediate).
+    // ======================================================================
+    function onReduceChange() {
+      if (reduced()) {
+        // snap to still, crisp state
+        docEl.classList.remove("arrival-play");
+        docEl.querySelectorAll(".resolve").forEach(function (el) {
+          el.style.opacity = ""; el.style.transform = "";
+        });
+        targetX = targetY = curX = curY = 0;
+        composeTransforms();
+        disableCursor();
+      }
+    }
+    if (mqReduce.addEventListener) mqReduce.addEventListener("change", onReduceChange);
+  })();
+  </script>
+</body>
+</html>

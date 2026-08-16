@@ -1,0 +1,257 @@
+@import "tailwindcss";
+
+/* =============================================================================
+   MOHD ALSAF — PORTFOLIO V2 ("IN FOCUS") DESIGN TOKENS & SYSTEM
+   Governed by: docs/02-identity-first.md, 03-interaction-philosophy.md, 04-visual-identity.md
+   ============================================================================= */
+
+:root {
+  /* Light "Paper & Ink" is the default */
+  --surface: #f4f1ea;
+  --surface-raised: #ffffff;
+  --surface-subtle: #ece8df;
+  --text: #16161a;
+  --muted: #6b6b72;
+  --hairline: rgba(22, 22, 26, 0.12);
+  --hairline-strong: rgba(22, 22, 26, 0.20);
+  --tick: rgba(22, 22, 26, 0.14);
+  --accent: #2a46e0;
+  --accent-ink: #2a46e0;
+  --focus-ring: #2a46e0;
+
+  --arrival-ms: 720ms;
+  --arrival-ease: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --surface: #17181c;
+    --surface-raised: #222329;
+    --surface-subtle: #1e1f24;
+    --text: #ede9e0;
+    --muted: #9a9ba8;
+    --hairline: rgba(237, 233, 224, 0.12);
+    --hairline-strong: rgba(237, 233, 224, 0.22);
+    --tick: rgba(237, 233, 224, 0.14);
+    --accent: #2a46e0;
+    --accent-ink: #8aa0ff;
+    --focus-ring: #8aa0ff;
+  }
+}
+
+[data-theme="dark"] {
+  --surface: #17181c;
+  --surface-raised: #222329;
+  --surface-subtle: #1e1f24;
+  --text: #ede9e0;
+  --muted: #9a9ba8;
+  --hairline: rgba(237, 233, 224, 0.12);
+  --hairline-strong: rgba(237, 233, 224, 0.22);
+  --tick: rgba(237, 233, 224, 0.14);
+  --accent: #2a46e0;
+  --accent-ink: #8aa0ff;
+  --focus-ring: #8aa0ff;
+}
+
+[data-theme="light"] {
+  --surface: #f4f1ea;
+  --surface-raised: #ffffff;
+  --surface-subtle: #ece8df;
+  --text: #16161a;
+  --muted: #6b6b72;
+  --hairline: rgba(22, 22, 26, 0.12);
+  --hairline-strong: rgba(22, 22, 26, 0.20);
+  --tick: rgba(22, 22, 26, 0.14);
+  --accent: #2a46e0;
+  --accent-ink: #2a46e0;
+  --focus-ring: #2a46e0;
+}
+
+@theme {
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-hairline: var(--hairline);
+  --color-hairline-strong: var(--hairline-strong);
+  --color-tick: var(--tick);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+
+  --font-sans: "General Sans", var(--font-sans-fallback), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-mono), "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  min-height: 100%;
+  background-color: var(--surface);
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+/* ============================================================
+   BACKGROUND GRID STYLES
+   ============================================================ */
+.field, .field-near {
+  position: absolute;
+  inset: -40px;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(to right, var(--hairline) 0, var(--hairline) 1px, transparent 1px, transparent 96px),
+    repeating-linear-gradient(to bottom, var(--hairline) 0, var(--hairline) 1px, transparent 1px, transparent 96px);
+  background-position: center center;
+  will-change: transform;
+}
+
+.field-near {
+  background-image:
+    repeating-linear-gradient(to right, var(--hairline-strong) 0, var(--hairline-strong) 1px, transparent 1px, transparent 96px),
+    repeating-linear-gradient(to bottom, var(--hairline-strong) 0, var(--hairline-strong) 1px, transparent 1px, transparent 96px);
+  opacity: 0;
+  -webkit-mask-image: radial-gradient(circle 200px at var(--mx, -300px) var(--my, -300px), #000 0%, rgba(0,0,0,0.35) 55%, transparent 72%);
+  mask-image: radial-gradient(circle 200px at var(--mx, -300px) var(--my, -300px), #000 0%, rgba(0,0,0,0.35) 55%, transparent 72%);
+  transition: opacity 120ms linear;
+}
+
+.field-near.active {
+  opacity: 1;
+}
+
+.ticks {
+  display: flex;
+  gap: 10px;
+  pointer-events: none;
+  opacity: 0.9;
+}
+.ticks .tick { width: 1px; height: 7px; background: var(--tick); }
+.ticks .tick.major { height: 12px; }
+
+/* ============================================================
+   CUSTOM CURSOR INSTRUMENT
+   ============================================================ */
+.cursor {
+  position: fixed;
+  top: 0; left: 0;
+  z-index: 9999;
+  width: 22px; height: 22px;
+  margin: -11px 0 0 -11px;
+  pointer-events: none;
+  opacity: 0;
+  will-change: transform;
+}
+
+body.custom-cursor { cursor: none; }
+body.custom-cursor * { cursor: none !important; }
+
+.cursor .ring {
+  position: absolute; inset: 0;
+  border: 1px solid var(--text);
+  border-radius: 2px;
+  opacity: 0.55;
+  transform: scale(1);
+  transform-origin: center center;
+  transition: transform 120ms var(--arrival-ease), border-color 120ms linear, opacity 120ms linear;
+}
+.cursor .dot {
+  position: absolute; top: 50%; left: 50%;
+  width: 2px; height: 2px; margin: -1px 0 0 -1px;
+  background: var(--text);
+  transition: background-color 120ms linear, opacity 120ms linear;
+}
+.cursor .scanline {
+  position: absolute; top: 3px; bottom: 3px; left: 50%;
+  width: 1px; margin-left: -0.5px;
+  background: var(--text);
+  opacity: 0;
+  pointer-events: none;
+}
+.cursor .scanline.run { animation: cursor-sweep 520ms var(--arrival-ease) 1 forwards; }
+@keyframes cursor-sweep {
+  0%   { opacity: 0;   transform: translateX(-17px) scaleY(0.55); }
+  18%  { opacity: 0.65; }
+  82%  { opacity: 0.65; }
+  100% { opacity: 0;   transform: translateX(17px) scaleY(0.55); }
+}
+.cursor .chev {
+  position: absolute; left: 50%; top: 100%;
+  width: 6px; height: 6px; margin: 3px 0 0 -3px;
+  border-right: 1.5px solid var(--text);
+  border-bottom: 1.5px solid var(--text);
+  transform: rotate(45deg) scale(0.4);
+  transform-origin: center;
+  opacity: 0;
+  transition: opacity 120ms linear, transform 140ms var(--arrival-ease);
+}
+.cursor .loader {
+  position: absolute; inset: -3px;
+  border: 1px solid transparent;
+  border-top-color: var(--accent);
+  border-radius: 3px;
+  opacity: 0;
+}
+
+/* Cursor State Variations */
+.cursor.is-scan .ring { transform: scaleX(1.9) scaleY(1.06); opacity: 0.7; border-color: var(--text); }
+.cursor.is-scan .dot { opacity: 0; }
+
+.cursor.is-clickable .ring { transform: scale(0.76); border-color: var(--accent); opacity: 0.95; }
+.cursor.is-clickable .dot { background: var(--accent); }
+
+.cursor.is-nav .ring { transform: scaleY(1.14); opacity: 0.78; }
+.cursor.is-nav .chev { opacity: 0.9; transform: rotate(45deg) scale(1); }
+
+.cursor.is-grab .ring { transform: scale(1.18); opacity: 0.5; border-color: var(--text); }
+.cursor.is-grab .dot { opacity: 0.5; }
+
+.cursor.is-press .ring { transform: scale(0.72); opacity: 1; }
+
+.cursor.is-loading .ring { opacity: 0.28; transform: scale(1); }
+.cursor.is-loading .dot { opacity: 0; }
+.cursor.is-loading .loader { opacity: 1; animation: cursor-spin 720ms linear infinite; }
+@keyframes cursor-spin { to { transform: rotate(360deg); } }
+
+/* Click registration snap */
+.snap {
+  position: fixed;
+  z-index: 15;
+  width: 26px; height: 26px;
+  margin: -13px 0 0 -13px;
+  pointer-events: none;
+}
+.snap::before, .snap::after {
+  content: ""; position: absolute; background: var(--accent);
+}
+.snap::before { left: 50%; top: 0; width: 1px; height: 100%; margin-left: -0.5px; }
+.snap::after  { top: 50%; left: 0; height: 1px; width: 100%; margin-top: -0.5px; }
+.snap.play {
+  animation: snap 260ms var(--arrival-ease) 1 forwards;
+}
+@keyframes snap {
+  0%   { opacity: 0; transform: scale(1.18); }
+  35%  { opacity: 1; transform: scale(1.0); }
+  100% { opacity: 0; transform: scale(1.0); }
+}
+
+.font-annotation {
+  font-family: var(--font-mono);
+  font-feature-settings: "tnum" 1, "zero" 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .cursor, .snap { display: none !important; }
+  body.custom-cursor, body.custom-cursor * { cursor: auto !important; }
+}
