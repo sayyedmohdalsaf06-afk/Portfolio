@@ -183,55 +183,42 @@ export function ProjectExperience() {
     }
 
     function composeTransforms() {
-      // 1. Continuous Zero-G Levitation + Parallax Drift
-      time += 0.026;
-      const ambientFloatY = Math.sin(time + 2.4) * 4.2;
-      const ambientRotZ = Math.cos((time + 2.4) * 0.65) * 0.6;
-      const ambientRotX = Math.sin((time + 2.4) * 0.55) * 0.5;
-      const scrollParallaxY = Math.sin(lastScrollY * 0.0028) * 5.0;
+      // 1. Crisp 3D Pop-Up Elevation when in view or scrolling
+      const popZ = clamp(scrollPopElevate * 22 + Math.abs(curScrollVel) * 0.5, 0, 28);
+      const popScale = 1.0 + clamp(scrollPopElevate * 0.016 + Math.abs(curScrollVel) * 0.0008, 0, 0.028);
 
-      // 2. Scroll Momentum Tilt & Pop-up dynamics
-      const scrollTiltX = clamp(curScrollVel * 0.28, -7.5, 7.5);
-      const scrollBankingZ = clamp(-curScrollVel * 0.06, -2.5, 2.5);
-      const scrollLiftY = clamp(-curScrollVel * 0.25, -12, 12);
+      // 2. Drag Banking & Displacement (springs back to static position)
+      const dragBankZ = dragCurX * 0.20;
+      const dragBankX = dragCurY * -0.14;
 
-      // Dynamic pop-out in 3D perspective space (Z-axis + scale)
-      const popZ = clamp(scrollPopElevate * 26 + Math.abs(curScrollVel) * 1.3, 0, 46);
-      const popScale = 1.0 + clamp(scrollPopElevate * 0.018 + Math.abs(curScrollVel) * 0.0015, 0, 0.045);
-
-      // 3. Drag Banking & Displacement
-      const dragBankZ = dragCurX * 0.22;
-      const dragBankX = dragCurY * -0.15;
-
-      // 4. Combined Composition
-      const totalRotX = curRotX + ambientRotX + scrollTiltX + dragBankX;
+      // 3. Combined Composition (Static layout anchor)
+      const totalRotX = curRotX + dragBankX;
       const totalRotY = curRotY;
-      const totalRotZ = ambientRotZ + scrollBankingZ + dragBankZ;
+      const totalRotZ = dragBankZ;
       const totalTransX = dragCurX;
-      const totalTransY = dragCurY + ambientFloatY + scrollParallaxY + scrollLiftY;
+      const totalTransY = dragCurY;
 
       const rotStr = `rotateX(${totalRotX.toFixed(2)}deg) rotateY(${totalRotY.toFixed(2)}deg) rotateZ(${totalRotZ.toFixed(2)}deg)`;
       const transStr = `translate3d(${totalTransX.toFixed(2)}px, ${totalTransY.toFixed(2)}px, ${popZ.toFixed(1)}px) scale(${popScale.toFixed(4)})`;
       card!.style.transform = `${transStr} ${rotStr}`;
 
-      // 5. Specular Glare Movement
+      // 4. Specular Glare Movement
       if (sheen) {
-        const sheenY = localMouseY + curScrollVel * 1.2;
-        sheen.style.background = `radial-gradient(circle 420px at ${localMouseX}px ${sheenY.toFixed(1)}px, rgba(138, 160, 255, 0.14), transparent 70%)`;
+        sheen.style.background = `radial-gradient(circle 420px at ${localMouseX}px ${localMouseY}px, rgba(138, 160, 255, 0.14), transparent 70%)`;
       }
 
-      // 6. Breathing & Reactive Pop Underglow
+      // 5. Breathing & Reactive Pop Underglow
       if (glow) {
-        const glowScale = 1.0 + Math.sin(time * 1.3) * 0.05 + (dragging ? 0.15 : 0) + (popZ / 90);
-        const glowOpacity = 0.28 + (dragging ? 0.28 : 0) + (popZ / 80);
-        glow.style.transform = `translate3d(${totalTransX.toFixed(2)}px, ${(totalTransY + 16).toFixed(2)}px, -40px) scale(${glowScale.toFixed(3)})`;
-        glow.style.opacity = `${clamp(glowOpacity, 0.2, 0.8).toFixed(2)}`;
+        const glowScale = 1.0 + (dragging ? 0.12 : 0) + (popZ / 120);
+        const glowOpacity = 0.24 + (dragging ? 0.22 : 0) + (popZ / 80);
+        glow.style.transform = `translate3d(${totalTransX.toFixed(2)}px, ${(totalTransY + 14).toFixed(2)}px, -40px) scale(${glowScale.toFixed(3)})`;
+        glow.style.opacity = `${clamp(glowOpacity, 0.15, 0.70).toFixed(2)}`;
       }
 
-      // 7. Dynamic Elevation Shadow Expansion
+      // 6. Dynamic Elevation Shadow Expansion
       const shadowX = (-totalRotY * 2.2 + dragCurX * 0.2).toFixed(1);
-      const shadowY = (totalRotX * 2.2 + 14 + popZ * 0.45 + Math.abs(dragCurY) * 0.3).toFixed(1);
-      const shadowBlur = (32 + popZ * 0.75).toFixed(1);
+      const shadowY = (totalRotX * 2.2 + 12 + popZ * 0.4 + Math.abs(dragCurY) * 0.3).toFixed(1);
+      const shadowBlur = (24 + popZ * 0.6).toFixed(1);
       card!.style.boxShadow = `${shadowX}px ${shadowY}px ${shadowBlur}px var(--hairline-strong)`;
     }
 

@@ -74,32 +74,26 @@ export function FloatingPhotoCard() {
     }
 
     function composeTransforms() {
-      // 1. Continuous Zero-G Levitation + Parallax Drift
-      time += 0.028;
-      const ambientFloatY = Math.sin(time) * 4.6;
-      const ambientRotZ = Math.cos(time * 0.7) * 0.8;
-      const ambientRotX = Math.sin(time * 0.6) * 0.6;
-      const scrollParallaxY = Math.sin(lastScrollY * 0.0035) * 6.0;
+      // 1. Gentle stable levitation at exact position (no vertical scroll drift)
+      time += 0.024;
+      const ambientFloatY = Math.sin(time) * 2.0;
+      const ambientRotZ = Math.cos(time * 0.6) * 0.4;
+      const ambientRotX = Math.sin(time * 0.5) * 0.3;
 
-      // 2. Scroll Momentum Tilt & Pop-up dynamics
-      const scrollTiltX = clamp(curScrollVel * 0.32, -9, 9);
-      const scrollBankingZ = clamp(-curScrollVel * 0.08, -3.5, 3.5);
-      const scrollLiftY = clamp(-curScrollVel * 0.3, -16, 16);
-
-      // Dynamic pop-out in 3D perspective space (Z-axis + scale)
-      const popZ = clamp(scrollPopElevate * 22 + Math.abs(curScrollVel) * 1.4, 0, 48);
-      const popScale = 1.0 + clamp(scrollPopElevate * 0.024 + Math.abs(curScrollVel) * 0.0018, 0, 0.06);
+      // 2. Crisp 3D Pop-up when active
+      const popZ = clamp(scrollPopElevate * 18 + Math.abs(curScrollVel) * 0.6, 0, 28);
+      const popScale = 1.0 + clamp(scrollPopElevate * 0.018 + Math.abs(curScrollVel) * 0.001, 0, 0.035);
 
       // 3. Drag Banking & Displacement
-      const dragBankZ = dragCurX * 0.26;
-      const dragBankX = dragCurY * -0.18;
+      const dragBankZ = dragCurX * 0.22;
+      const dragBankX = dragCurY * -0.15;
 
-      // 4. Combined Composition
-      const totalRotX = curRotX + ambientRotX + scrollTiltX + dragBankX;
+      // 4. Combined Composition (clean and stable)
+      const totalRotX = curRotX + ambientRotX + dragBankX;
       const totalRotY = curRotY;
-      const totalRotZ = ambientRotZ + scrollBankingZ + dragBankZ;
+      const totalRotZ = ambientRotZ + dragBankZ;
       const totalTransX = dragCurX;
-      const totalTransY = dragCurY + ambientFloatY + scrollParallaxY + scrollLiftY;
+      const totalTransY = dragCurY + ambientFloatY;
 
       const rotStr = `rotateX(${totalRotX.toFixed(2)}deg) rotateY(${totalRotY.toFixed(2)}deg) rotateZ(${totalRotZ.toFixed(2)}deg)`;
       const transStr = `translate3d(${totalTransX.toFixed(2)}px, ${totalTransY.toFixed(2)}px, ${popZ.toFixed(1)}px) scale(${popScale.toFixed(4)})`;
@@ -107,22 +101,21 @@ export function FloatingPhotoCard() {
 
       // 5. Specular Glare Movement
       if (sheen) {
-        const sheenY = localMouseY + curScrollVel * 1.5;
-        sheen.style.background = `radial-gradient(circle 340px at ${localMouseX}px ${sheenY.toFixed(1)}px, rgba(138, 160, 255, 0.18), transparent 70%)`;
+        sheen.style.background = `radial-gradient(circle 340px at ${localMouseX}px ${localMouseY}px, rgba(138, 160, 255, 0.16), transparent 70%)`;
       }
 
       // 6. Breathing & Reactive Pop Underglow
       if (glow) {
-        const glowScale = 1.0 + Math.sin(time * 1.4) * 0.06 + (dragging ? 0.16 : 0) + (popZ / 90);
-        const glowOpacity = 0.32 + (dragging ? 0.3 : 0) + (popZ / 75);
-        glow.style.transform = `translate3d(${totalTransX.toFixed(2)}px, ${(totalTransY + 16).toFixed(2)}px, -40px) scale(${glowScale.toFixed(3)})`;
-        glow.style.opacity = `${clamp(glowOpacity, 0.25, 0.85).toFixed(2)}`;
+        const glowScale = 1.0 + Math.sin(time * 1.2) * 0.04 + (dragging ? 0.14 : 0) + (popZ / 120);
+        const glowOpacity = 0.30 + (dragging ? 0.25 : 0) + (popZ / 90);
+        glow.style.transform = `translate3d(${totalTransX.toFixed(2)}px, ${(totalTransY + 14).toFixed(2)}px, -40px) scale(${glowScale.toFixed(3)})`;
+        glow.style.opacity = `${clamp(glowOpacity, 0.2, 0.75).toFixed(2)}`;
       }
 
-      // 7. Dynamic Elevation Shadow Expansion
-      const shadowX = (-totalRotY * 2.4 + dragCurX * 0.25).toFixed(1);
-      const shadowY = (totalRotX * 2.4 + 14 + popZ * 0.5 + Math.abs(dragCurY) * 0.35).toFixed(1);
-      const shadowBlur = (36 + popZ * 0.8).toFixed(1);
+      // 7. Dynamic Elevation Shadow
+      const shadowX = (-totalRotY * 2.2 + dragCurX * 0.2).toFixed(1);
+      const shadowY = (totalRotX * 2.2 + 12 + popZ * 0.35 + Math.abs(dragCurY) * 0.3).toFixed(1);
+      const shadowBlur = (28 + popZ * 0.6).toFixed(1);
       card!.style.boxShadow = `${shadowX}px ${shadowY}px ${shadowBlur}px var(--hairline-strong)`;
     }
 
