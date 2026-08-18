@@ -76,15 +76,15 @@ export function FloatingPhotoCard() {
       const transStr = `translate3d(${totalTransX.toFixed(2)}px, ${totalTransY.toFixed(2)}px, 0)`;
       card!.style.transform = `${transStr} ${rotStr}`;
 
-      // 4. Specular Glare Movement
+      // 4. Specular Glare Movement with Prismatic Violet & Cyan Highlights
       if (sheen) {
-        sheen.style.background = `radial-gradient(circle 380px at ${localMouseX}px ${localMouseY}px, rgba(138, 160, 255, 0.24), transparent 70%)`;
+        sheen.style.background = `radial-gradient(circle 380px at ${localMouseX}px ${localMouseY}px, rgba(167, 139, 250, 0.28) 0%, rgba(6, 182, 212, 0.14) 48%, transparent 72%)`;
       }
 
-      // 5. Breathing Underglow Aura
+      // 5. Breathing Aurora Underglow Aura
       if (glow) {
         const glowScale = 1.0 + Math.sin(time * 1.6) * 0.12 + (dragging ? 0.20 : 0);
-        const glowOpacity = 0.42 + Math.sin(time * 1.6) * 0.12 + (dragging ? 0.30 : 0);
+        const glowOpacity = 0.44 + Math.sin(time * 1.6) * 0.12 + (dragging ? 0.30 : 0);
         glow.style.transform = `translate3d(${totalTransX.toFixed(2)}px, ${(totalTransY + 16).toFixed(2)}px, -40px) scale(${glowScale.toFixed(3)})`;
         glow.style.opacity = `${glowOpacity.toFixed(2)}`;
       }
@@ -211,11 +211,11 @@ export function FloatingPhotoCard() {
     >
       {/* 3D Perspective Stage */}
       <div className="relative w-full [perspective:1200px]">
-        {/* Breathing Focus Blue Underglow Aura */}
+        {/* Breathing Aurora Violet & Cyan Underglow Aura */}
         <div
           ref={glowRef}
           aria-hidden="true"
-          className="absolute inset-x-4 -inset-y-3 rounded-full bg-[radial-gradient(ellipse_at_center,var(--accent)_0%,transparent_68%)] opacity-30 blur-2xl pointer-events-none -z-10 transition-opacity duration-300"
+          className="absolute inset-x-4 -inset-y-3 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(139,92,246,0.65)_0%,rgba(6,182,212,0.28)_45%,transparent_72%)] opacity-35 blur-2xl pointer-events-none -z-10 transition-opacity duration-300"
         />
 
         {/* 3D Physical Card Chassis */}
@@ -237,7 +237,7 @@ export function FloatingPhotoCard() {
           {/* Animated Iridescent Edge Shimmer */}
           <div
             aria-hidden="true"
-            className="absolute -inset-[1px] rounded-sm pointer-events-none z-20 border border-[var(--accent)]/30 opacity-75 [mask-image:radial-gradient(circle_at_top_right,black,transparent_75%)]"
+            className="absolute -inset-[1px] rounded-sm pointer-events-none z-20 border border-[var(--accent-ink)]/35 opacity-80 [mask-image:radial-gradient(circle_at_top_right,black,transparent_75%)]"
           />
 
           {/* Top Meta Bar */}
@@ -246,7 +246,7 @@ export function FloatingPhotoCard() {
             style={{ transform: "translateZ(8px)" }}
           >
             <div className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)] animate-pulse" aria-hidden="true" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-ink)] animate-pulse shadow-[0_0_8px_var(--accent-glow)]" aria-hidden="true" />
               <span className="font-semibold text-[var(--text)] tracking-wider">DOSSIER // SPEC-01</span>
             </div>
             <span className="text-[var(--accent-ink)] font-semibold">ACTIVE BUILDER</span>
@@ -268,7 +268,7 @@ export function FloatingPhotoCard() {
             {/* Scanline Radar Sweep */}
             <div
               aria-hidden="true"
-              className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-transparent via-[var(--accent)]/15 to-transparent pointer-events-none z-20 animate-[scanline_4s_ease-in-out_infinite]"
+              className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-transparent via-[var(--accent-ink)]/25 to-transparent pointer-events-none z-20 animate-[scanline_4s_ease-in-out_infinite]"
             />
 
             {!imgError ? (

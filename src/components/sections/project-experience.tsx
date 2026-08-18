@@ -205,13 +205,13 @@ export function ProjectExperience() {
       card!.style.transform = `${transStr} ${rotStr}`;
       card!.style.opacity = `${popOpacity.toFixed(2)}`;
 
-      // 4. Dynamic Holographic Glare Movement
+      // 4. Dynamic Holographic Glare Movement with Prismatic Violet & Cyan
       if (sheen) {
         const glareY = localMouseY + (1 - clamp(popProgress, 0, 1)) * 120;
-        sheen.style.background = `radial-gradient(circle 460px at ${localMouseX}px ${glareY.toFixed(1)}px, rgba(138, 160, 255, 0.26), transparent 70%)`;
+        sheen.style.background = `radial-gradient(circle 460px at ${localMouseX}px ${glareY.toFixed(1)}px, rgba(167, 139, 250, 0.30) 0%, rgba(6, 182, 212, 0.14) 48%, transparent 72%)`;
       }
 
-      // 5. Breathing & Radiant Pop Underglow Aura
+      // 5. Breathing & Radiant Aurora Pop Underglow Aura
       if (glow) {
         const glowScale = 0.70 + popProgress * 0.42 + (dragging ? 0.20 : 0);
         const glowOpacity = clamp(popProgress * 0.58 + (dragging ? 0.30 : 0), 0, 0.90);
@@ -303,7 +303,7 @@ export function ProjectExperience() {
       dragging = true;
       dragStartX = e.clientX - dragCurX;
       dragStartY = e.clientY - dragCurY;
-      document.body.classList.add("is-dragging-grid");
+      document.body.classList.add("is-dragging-card");
     }
 
     function onPointerUp() {
@@ -311,7 +311,7 @@ export function ProjectExperience() {
       dragging = false;
       dragTargetX = 0;
       dragTargetY = 0;
-      document.body.classList.remove("is-dragging-grid");
+      document.body.classList.remove("is-dragging-card");
     }
 
     function onPointerLeave() {
@@ -378,11 +378,11 @@ export function ProjectExperience() {
 
       {/* Interactive Physical Object Container */}
       <div className="relative w-full [perspective:1200px]">
-        {/* Ambient Focus Blue Underglow Aura */}
+        {/* Ambient Aurora Underglow Aura */}
         <div
           ref={glowRef}
           aria-hidden="true"
-          className="absolute inset-x-8 -inset-y-4 rounded-full bg-[radial-gradient(ellipse_at_center,var(--accent)_0%,transparent_68%)] opacity-25 blur-2xl pointer-events-none -z-10 transition-opacity duration-300"
+          className="absolute inset-x-8 -inset-y-4 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.60)_0%,rgba(139,92,246,0.30)_40%,rgba(6,182,212,0.15)_65%,transparent_75%)] opacity-30 blur-2xl pointer-events-none -z-10 transition-opacity duration-300"
         />
 
         <div

@@ -8,7 +8,7 @@
    ============================================================================= */
 
 :root {
-  /* Default Ambient Environment: Graphite */
+  /* Default Ambient Environment: Graphite with Neo-Cyber Aurora Lighting */
   --surface: #0e0f12;
   --surface-raised: #15171c;
   --surface-subtle: #111216;
@@ -17,9 +17,11 @@
   --hairline: rgba(237, 233, 224, 0.08);
   --hairline-strong: rgba(237, 233, 224, 0.16);
   --tick: rgba(237, 233, 224, 0.12);
-  --accent: #2a46e0;
-  --accent-ink: #8aa0ff;
-  --focus-ring: #8aa0ff;
+  --accent: #6366f1;
+  --accent-ink: #a5b4fc;
+  --accent-glow: #8b5cf6;
+  --accent-cyan: #06b6d4;
+  --focus-ring: #a5b4fc;
 
   --terminal-bg: #090a0d;
   --terminal-chrome: #121317;
@@ -39,9 +41,11 @@
   --hairline: rgba(237, 233, 224, 0.08);
   --hairline-strong: rgba(237, 233, 224, 0.16);
   --tick: rgba(237, 233, 224, 0.12);
-  --accent: #2a46e0;
-  --accent-ink: #8aa0ff;
-  --focus-ring: #8aa0ff;
+  --accent: #6366f1;
+  --accent-ink: #a5b4fc;
+  --accent-glow: #8b5cf6;
+  --accent-cyan: #06b6d4;
+  --focus-ring: #a5b4fc;
 
   --terminal-bg: #090a0d;
   --terminal-chrome: #121317;
@@ -58,9 +62,11 @@
   --hairline: rgba(22, 22, 26, 0.10);
   --hairline-strong: rgba(22, 22, 26, 0.18);
   --tick: rgba(22, 22, 26, 0.12);
-  --accent: #2a46e0;
-  --accent-ink: #2a46e0;
-  --focus-ring: #2a46e0;
+  --accent: #4f46e5;
+  --accent-ink: #4f46e5;
+  --accent-glow: #7c3aed;
+  --accent-cyan: #0891b2;
+  --focus-ring: #4f46e5;
 
   --terminal-bg: #111215;
   --terminal-chrome: #18191e;

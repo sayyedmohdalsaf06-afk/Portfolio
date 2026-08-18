@@ -252,8 +252,10 @@ export function BackgroundField() {
             if (lineAlpha > 0.02) {
               ctx.lineWidth = p1.distToMouse < 150 ? 1.1 : 0.7;
               ctx.strokeStyle = isDark
-                ? `rgba(138, 160, 255, ${Math.min(0.92, lineAlpha)})`
-                : `rgba(42, 70, 224, ${Math.min(0.80, lineAlpha)})`;
+                ? (i % 2 === 0
+                    ? `rgba(167, 139, 250, ${Math.min(0.92, lineAlpha)})`
+                    : `rgba(6, 182, 212, ${Math.min(0.85, lineAlpha)})`)
+                : `rgba(79, 70, 229, ${Math.min(0.80, lineAlpha)})`;
               ctx.beginPath();
               ctx.moveTo(p1.px, p1.py);
               ctx.lineTo(p2.px, p2.py);
@@ -281,13 +283,13 @@ export function BackgroundField() {
             const pulseY = pt1.py + (pt2.py - pt1.py) * pulse.progress;
             const pulseSize = 2.4 * ((pt1.scale + pt2.scale) / 2);
 
-            ctx.fillStyle = isDark ? "rgba(165, 185, 255, 0.98)" : "rgba(42, 70, 224, 0.95)";
+            ctx.fillStyle = isDark ? "rgba(192, 132, 252, 0.98)" : "rgba(79, 70, 229, 0.95)";
             ctx.beginPath();
             ctx.arc(pulseX, pulseY, pulseSize, 0, Math.PI * 2);
             ctx.fill();
 
             // Luminous pulse aura
-            ctx.fillStyle = isDark ? "rgba(138, 160, 255, 0.4)" : "rgba(42, 70, 224, 0.35)";
+            ctx.fillStyle = isDark ? "rgba(6, 182, 212, 0.45)" : "rgba(79, 70, 229, 0.35)";
             ctx.beginPath();
             ctx.arc(pulseX, pulseY, pulseSize * 2.8, 0, Math.PI * 2);
             ctx.fill();
@@ -306,10 +308,10 @@ export function BackgroundField() {
           const arm = (ptSize + 4.5) * scale;
           ctx.strokeStyle = isDark
             ? isNearby
-              ? `rgba(165, 185, 255, ${alpha})`
+              ? `rgba(192, 132, 252, ${alpha})`
               : `rgba(237, 233, 224, ${alpha})`
             : isNearby
-            ? `rgba(42, 70, 224, ${alpha})`
+            ? `rgba(79, 70, 229, ${alpha})`
             : `rgba(22, 22, 26, ${alpha})`;
           ctx.lineWidth = isNearby ? 1.4 : 0.9;
           ctx.beginPath();
@@ -322,10 +324,10 @@ export function BackgroundField() {
           // Luminous node core
           ctx.fillStyle = isDark
             ? isNearby
-              ? `rgba(165, 185, 255, ${alpha})`
+              ? `rgba(192, 132, 252, ${alpha})`
               : `rgba(237, 233, 224, ${alpha})`
             : isNearby
-            ? `rgba(42, 70, 224, ${alpha})`
+            ? `rgba(79, 70, 229, ${alpha})`
             : `rgba(22, 22, 26, ${alpha})`;
 
           ctx.beginPath();
@@ -336,8 +338,8 @@ export function BackgroundField() {
           if (p.hasRing || isNearby) {
             const ringRadius = Math.max(4.0, ptSize + 5.0);
             ctx.strokeStyle = isDark
-              ? `rgba(138, 160, 255, ${alpha * 0.65})`
-              : `rgba(42, 70, 224, ${alpha * 0.55})`;
+              ? `rgba(167, 139, 250, ${alpha * 0.70})`
+              : `rgba(79, 70, 229, ${alpha * 0.55})`;
             ctx.lineWidth = 0.9;
             ctx.beginPath();
             ctx.arc(px, py, ringRadius, 0, Math.PI * 2);
@@ -347,9 +349,9 @@ export function BackgroundField() {
             const tickAngle = time * 1.3 + p.pulsePhase;
             const tx = px + Math.cos(tickAngle) * ringRadius;
             const ty = py + Math.sin(tickAngle) * ringRadius;
-            ctx.fillStyle = isDark ? `rgba(165, 185, 255, ${alpha})` : `rgba(42, 70, 224, ${alpha})`;
+            ctx.fillStyle = isDark ? `rgba(6, 182, 212, ${alpha})` : `rgba(79, 70, 229, ${alpha})`;
             ctx.beginPath();
-            ctx.arc(tx, ty, 1.4, 0, Math.PI * 2);
+            ctx.arc(tx, ty, 1.2, 0, Math.PI * 2);
             ctx.fill();
           }
         }
