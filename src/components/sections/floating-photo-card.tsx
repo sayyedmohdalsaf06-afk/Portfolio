@@ -54,17 +54,17 @@ export function FloatingPhotoCard() {
     }
 
     function composeTransforms() {
-      // 1. Continuous Zero-G Floating Levitation at its sticky spot
-      time += 0.026;
-      const ambientFloatY = Math.sin(time) * 3.6;
-      const ambientRotZ = Math.cos(time * 0.7) * 0.6;
-      const ambientRotX = Math.sin(time * 0.6) * 0.4;
+      // 1. Continuous Zero-G Floating Levitation with rich dual-frequency buoyancy
+      time += 0.028;
+      const ambientFloatY = Math.sin(time) * 5.2 + Math.cos(time * 0.45) * 1.6;
+      const ambientRotZ = Math.cos(time * 0.72) * 1.1;
+      const ambientRotX = Math.sin(time * 0.58) * 0.8;
 
       // 2. Drag Banking & Displacement
-      const dragBankZ = dragCurX * 0.24;
-      const dragBankX = dragCurY * -0.16;
+      const dragBankZ = dragCurX * 0.26;
+      const dragBankX = dragCurY * -0.18;
 
-      // 3. Combined Composition (clean and stable float in place)
+      // 3. Combined Composition (rich, organic in-place float)
       const totalRotX = curRotX + ambientRotX + dragBankX;
       const totalRotY = curRotY;
       const totalRotZ = ambientRotZ + dragBankZ;
@@ -77,20 +77,21 @@ export function FloatingPhotoCard() {
 
       // 4. Specular Glare Movement
       if (sheen) {
-        sheen.style.background = `radial-gradient(circle 340px at ${localMouseX}px ${localMouseY}px, rgba(138, 160, 255, 0.16), transparent 70%)`;
+        sheen.style.background = `radial-gradient(circle 360px at ${localMouseX}px ${localMouseY}px, rgba(138, 160, 255, 0.18), transparent 70%)`;
       }
 
       // 5. Breathing Underglow Aura
       if (glow) {
-        const glowScale = 1.0 + Math.sin(time * 1.4) * 0.05 + (dragging ? 0.14 : 0);
-        glow.style.transform = `translate3d(${totalTransX.toFixed(2)}px, ${(totalTransY + 14).toFixed(2)}px, -40px) scale(${glowScale.toFixed(3)})`;
-        glow.style.opacity = `${(0.32 + (dragging ? 0.25 : 0)).toFixed(2)}`;
+        const glowScale = 1.0 + Math.sin(time * 1.5) * 0.08 + (dragging ? 0.16 : 0);
+        const glowOpacity = 0.36 + Math.sin(time * 1.5) * 0.07 + (dragging ? 0.25 : 0);
+        glow.style.transform = `translate3d(${totalTransX.toFixed(2)}px, ${(totalTransY + 16).toFixed(2)}px, -40px) scale(${glowScale.toFixed(3)})`;
+        glow.style.opacity = `${glowOpacity.toFixed(2)}`;
       }
 
       // 6. Dynamic Elevation Shadow
-      const shadowX = (-totalRotY * 2.2 + dragCurX * 0.2).toFixed(1);
-      const shadowY = (totalRotX * 2.2 + 12 + Math.abs(dragCurY) * 0.3).toFixed(1);
-      card!.style.boxShadow = `${shadowX}px ${shadowY}px 32px var(--hairline-strong)`;
+      const shadowX = (-totalRotY * 2.6 + dragCurX * 0.25).toFixed(1);
+      const shadowY = (totalRotX * 2.6 + 14 + Math.abs(dragCurY) * 0.35).toFixed(1);
+      card!.style.boxShadow = `${shadowX}px ${shadowY}px 36px var(--hairline-strong)`;
     }
 
     function frame() {
@@ -131,8 +132,8 @@ export function FloatingPhotoCard() {
         if (!dragging) {
           const nx = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
           const ny = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
-          targetRotX = -ny * 4.5;
-          targetRotY = nx * 4.5;
+          targetRotX = -ny * 6.0;
+          targetRotY = nx * 6.0;
         }
       } else if (!dragging) {
         targetRotX = 0;

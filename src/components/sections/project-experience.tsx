@@ -176,19 +176,21 @@ export function ProjectExperience() {
     }
 
     function composeTransforms() {
-      // 1. Dramatic 3D Pop-Up Animation on Scroll Down
+      // 1. Dramatic 3D Pop-Up Animation with lively spring bounce on scroll
       const t = curArrivalProgress;
-      const popProgress = 1 - Math.pow(1 - t, 2.8); // Smooth fluid power ease-out
+      const popProgress = t < 1
+        ? 1 - Math.pow(1 - t, 2.6) + Math.sin(t * Math.PI) * 0.05
+        : 1;
 
-      const popSlideY = (1 - popProgress) * 44; // Lifts up 44px
-      const popSlideZ = (1 - popProgress) * -110; // Enters from -110px depth in Z-space
-      const popPitchX = (1 - popProgress) * 9; // Pitches flat from 9deg
-      const popScale = 0.88 + popProgress * 0.12; // Scales up from 0.88 to 1.0
-      const popOpacity = 0.35 + popProgress * 0.65; // Fades in to full opacity
+      const popSlideY = (1 - clamp(popProgress, 0, 1.06)) * 64; // Lifts up 64px from below
+      const popSlideZ = (1 - clamp(popProgress, 0, 1.06)) * -160; // Enters from -160px depth in Z-space
+      const popPitchX = (1 - clamp(popProgress, 0, 1.06)) * 14; // Pitches flat from 14deg
+      const popScale = 0.82 + clamp(popProgress, 0, 1.06) * 0.18; // Scales up from 0.82 to 1.0
+      const popOpacity = clamp(popProgress * 1.3, 0, 1);
 
       // 2. Drag Banking & Displacement
-      const dragBankZ = dragCurX * 0.20;
-      const dragBankX = dragCurY * -0.14;
+      const dragBankZ = dragCurX * 0.24;
+      const dragBankX = dragCurY * -0.16;
 
       // 3. Combined Composition
       const totalRotX = curRotX + popPitchX + dragBankX;
@@ -203,29 +205,30 @@ export function ProjectExperience() {
       card!.style.transform = `${transStr} ${rotStr}`;
       card!.style.opacity = `${popOpacity.toFixed(2)}`;
 
-      // 4. Specular Glare Movement
+      // 4. Dynamic Holographic Glare Movement
       if (sheen) {
-        sheen.style.background = `radial-gradient(circle 420px at ${localMouseX}px ${localMouseY}px, rgba(138, 160, 255, 0.14), transparent 70%)`;
+        const glareY = localMouseY + (1 - clamp(popProgress, 0, 1)) * 90;
+        sheen.style.background = `radial-gradient(circle 420px at ${localMouseX}px ${glareY.toFixed(1)}px, rgba(138, 160, 255, 0.20), transparent 70%)`;
       }
 
-      // 5. Breathing & Reactive Pop Underglow
+      // 5. Breathing & Radiant Pop Underglow
       if (glow) {
-        const glowScale = 0.82 + popProgress * 0.22 + (dragging ? 0.12 : 0);
-        const glowOpacity = popProgress * 0.38 + (dragging ? 0.22 : 0);
-        glow.style.transform = `translate3d(${totalTransX.toFixed(2)}px, ${(totalTransY + 14).toFixed(2)}px, -40px) scale(${glowScale.toFixed(3)})`;
+        const glowScale = 0.76 + popProgress * 0.34 + (dragging ? 0.16 : 0);
+        const glowOpacity = clamp(popProgress * 0.48 + (dragging ? 0.25 : 0), 0, 0.85);
+        glow.style.transform = `translate3d(${totalTransX.toFixed(2)}px, ${(totalTransY + 16).toFixed(2)}px, -40px) scale(${glowScale.toFixed(3)})`;
         glow.style.opacity = `${glowOpacity.toFixed(2)}`;
       }
 
-      // 6. Dynamic Elevation Shadow Expansion
-      const shadowX = (-totalRotY * 2.2 + dragCurX * 0.2).toFixed(1);
-      const shadowY = (totalRotX * 2.2 + 10 + popProgress * 8 + Math.abs(dragCurY) * 0.3).toFixed(1);
-      const shadowBlur = (16 + popProgress * 24).toFixed(1);
+      // 6. Dynamic Elevation Shadow
+      const shadowX = (-totalRotY * 2.5 + dragCurX * 0.25).toFixed(1);
+      const shadowY = (totalRotX * 2.5 + 12 + popProgress * 12 + Math.abs(dragCurY) * 0.35).toFixed(1);
+      const shadowBlur = (16 + popProgress * 28).toFixed(1);
       card!.style.boxShadow = `${shadowX}px ${shadowY}px ${shadowBlur}px var(--hairline-strong)`;
     }
 
     function frame() {
       // (a) Silky smooth pop-up progress lerp
-      curArrivalProgress += (targetArrivalProgress - curArrivalProgress) * 0.08;
+      curArrivalProgress += (targetArrivalProgress - curArrivalProgress) * 0.085;
 
       // (b) Pointer 3D tilt easing
       curRotX += (targetRotX - curRotX) * 0.10;
@@ -264,8 +267,8 @@ export function ProjectExperience() {
         if (!dragging) {
           const nx = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
           const ny = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
-          targetRotX = -ny * 3.5;
-          targetRotY = nx * 3.5;
+          targetRotX = -ny * 5.0;
+          targetRotY = nx * 5.0;
         }
       } else if (!dragging) {
         targetRotX = 0;
