@@ -30,11 +30,11 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
     if (!canvas) return;
 
     // 1. Scene & Camera Setup
-    const width = 200;
-    const height = 200;
+    const width = 160;
+    const height = 160;
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
-    camera.position.set(0, 0.08, 2.75);
+    const camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 100);
+    camera.position.set(0, 0.04, 2.7);
 
     const renderer = new THREE.WebGLRenderer({
       canvas,
@@ -45,62 +45,73 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    // 2. Lighting Rig (Cyan-Teal Cyber Accent + Soft Key Light)
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.4);
+    // 2. Realistic Studio & Cyber Lighting Rig
+    const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
     scene.add(ambientLight);
 
-    const keyLight = new THREE.DirectionalLight(0xffffff, 2.2);
+    const keyLight = new THREE.DirectionalLight(0xfff5ea, 2.4);
     keyLight.position.set(2, 3, 3);
     scene.add(keyLight);
 
-    const cyanRimLight = new THREE.DirectionalLight(0x22d3ee, 3.5);
-    cyanRimLight.position.set(-3, 1, -1);
+    const cyanRimLight = new THREE.DirectionalLight(0x22d3ee, 3.8);
+    cyanRimLight.position.set(-3, 1.2, -1);
     scene.add(cyanRimLight);
 
-    const tealFillLight = new THREE.PointLight(0x0d9488, 2.8, 10);
-    tealFillLight.position.set(0, -1.5, 2);
-    scene.add(tealFillLight);
+    const warmFillLight = new THREE.PointLight(0xd97706, 1.8, 8);
+    warmFillLight.position.set(2, -1, 2);
+    scene.add(warmFillLight);
 
-    // 3. Materials
+    // 3. Materials — Modeled after Mohd Alsaf's portrait
+    // Warm natural medium-olive skin tone
     const skinMat = new THREE.MeshStandardMaterial({
-      color: 0xffdfc4,
-      roughness: 0.5,
-      metalness: 0.05,
+      color: 0xc88f60,
+      roughness: 0.55,
+      metalness: 0.04,
     });
 
+    // Dark espresso hair
     const hairMat = new THREE.MeshStandardMaterial({
-      color: 0x1f1917,
-      roughness: 0.7,
-      metalness: 0.1,
+      color: 0x141212,
+      roughness: 0.75,
+      metalness: 0.08,
     });
 
+    // Trimmed beard & mustache material
+    const beardMat = new THREE.MeshStandardMaterial({
+      color: 0x181413,
+      roughness: 0.85,
+      metalness: 0.02,
+    });
+
+    // Jet black hoodie
     const hoodieMat = new THREE.MeshStandardMaterial({
-      color: 0x121418,
-      roughness: 0.6,
-      metalness: 0.15,
+      color: 0x0f1115,
+      roughness: 0.65,
+      metalness: 0.12,
     });
 
+    // Glowing cyan cyber accent
     const cyanGlowMat = new THREE.MeshStandardMaterial({
       color: 0x22d3ee,
       emissive: 0x22d3ee,
-      emissiveIntensity: 1.2,
+      emissiveIntensity: 1.4,
       roughness: 0.2,
       metalness: 0.8,
     });
 
-    const headsetMat = new THREE.MeshStandardMaterial({
-      color: 0x0f172a,
-      roughness: 0.3,
-      metalness: 0.6,
+    const headsetChassisMat = new THREE.MeshStandardMaterial({
+      color: 0x1e293b,
+      roughness: 0.35,
+      metalness: 0.7,
     });
 
     const eyeWhiteMat = new THREE.MeshStandardMaterial({
-      color: 0xffffff,
+      color: 0xfcfcfc,
       roughness: 0.1,
     });
 
     const pupilMat = new THREE.MeshStandardMaterial({
-      color: 0x0f172a,
+      color: 0x100c0a,
       roughness: 0.1,
     });
 
@@ -114,12 +125,12 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
 
     // (A) Head & Face Group
     const headGroup = new THREE.Group();
-    headGroup.position.set(0, 0.35, 0);
+    headGroup.position.set(0, 0.32, 0);
     characterRoot.add(headGroup);
 
-    // Head base (cute anime proportions)
-    const headGeo = new THREE.SphereGeometry(0.48, 32, 32);
-    headGeo.scale(1, 0.95, 0.9);
+    // Head base (natural anime chibi proportions)
+    const headGeo = new THREE.SphereGeometry(0.46, 32, 32);
+    headGeo.scale(0.98, 1.0, 0.92);
     const headMesh = new THREE.Mesh(headGeo, skinMat);
     headGroup.add(headMesh);
 
@@ -127,214 +138,245 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
     const eyeGroup = new THREE.Group();
     headGroup.add(eyeGroup);
 
-    [-0.17, 0.17].forEach((xPos, idx) => {
+    [-0.16, 0.16].forEach((xPos, idx) => {
       // Eye White
-      const eyeGeo = new THREE.SphereGeometry(0.11, 16, 16);
-      eyeGeo.scale(0.85, 1.2, 0.4);
+      const eyeGeo = new THREE.SphereGeometry(0.095, 16, 16);
+      eyeGeo.scale(0.90, 1.15, 0.38);
       const eye = new THREE.Mesh(eyeGeo, eyeWhiteMat);
-      eye.position.set(xPos, 0.04, 0.38);
+      eye.position.set(xPos, 0.05, 0.38);
       eyeGroup.add(eye);
 
-      // Pupil
-      const pupilGeo = new THREE.SphereGeometry(0.08, 16, 16);
-      pupilGeo.scale(0.8, 1.1, 0.4);
+      // Pupil (Dark espresso)
+      const pupilGeo = new THREE.SphereGeometry(0.075, 16, 16);
+      pupilGeo.scale(0.85, 1.05, 0.38);
       const pupil = new THREE.Mesh(pupilGeo, pupilMat);
-      pupil.position.set(xPos * 0.95, 0.03, 0.42);
+      pupil.position.set(xPos * 0.96, 0.04, 0.42);
       eyeGroup.add(pupil);
 
-      // Cyan Iris Sparkle
-      const irisRingGeo = new THREE.TorusGeometry(0.05, 0.012, 8, 16);
+      // Cyan Iris Sparkle Ring
+      const irisRingGeo = new THREE.TorusGeometry(0.048, 0.010, 8, 16);
       const irisRing = new THREE.Mesh(irisRingGeo, cyanGlowMat);
-      irisRing.position.set(xPos * 0.95, 0.03, 0.44);
+      irisRing.position.set(xPos * 0.96, 0.04, 0.44);
       eyeGroup.add(irisRing);
 
-      // Eye Catchlight Specular Dot
-      const catchlightGeo = new THREE.SphereGeometry(0.025, 8, 8);
+      // Specular Catchlight
+      const catchlightGeo = new THREE.SphereGeometry(0.022, 8, 8);
       const catchlight = new THREE.Mesh(catchlightGeo, eyeHighlightMat);
-      catchlight.position.set(xPos + (idx === 0 ? 0.02 : -0.02), 0.07, 0.45);
+      catchlight.position.set(xPos + (idx === 0 ? 0.02 : -0.02), 0.075, 0.45);
       eyeGroup.add(catchlight);
+
+      // Dark Defined Eyebrows (matching photo)
+      const browGeo = new THREE.CylinderGeometry(0.018, 0.012, 0.16, 8);
+      browGeo.rotateZ(Math.PI / 2 + (idx === 0 ? 0.12 : -0.12));
+      const brow = new THREE.Mesh(browGeo, beardMat);
+      brow.position.set(xPos, 0.18, 0.40);
+      headGroup.add(brow);
     });
 
-    // Cute blush cheeks
-    [-0.26, 0.26].forEach((xPos) => {
-      const blushGeo = new THREE.SphereGeometry(0.06, 12, 12);
-      blushGeo.scale(1.2, 0.5, 0.2);
-      const blushMat = new THREE.MeshBasicMaterial({ color: 0xf472b6, opacity: 0.55, transparent: true });
-      const blush = new THREE.Mesh(blushGeo, blushMat);
-      blush.position.set(xPos, -0.09, 0.38);
-      headGroup.add(blush);
+    // (B) Facial Hair (Neat trimmed beard, mustache, and goatee matching Alsaf's portrait)
+    // 1. Mustache
+    const stacheLeftGeo = new THREE.CylinderGeometry(0.016, 0.010, 0.13, 8);
+    stacheLeftGeo.rotateZ(Math.PI / 2.3);
+    const stacheLeft = new THREE.Mesh(stacheLeftGeo, beardMat);
+    stacheLeft.position.set(-0.065, -0.08, 0.42);
+    headGroup.add(stacheLeft);
+
+    const stacheRightGeo = new THREE.CylinderGeometry(0.010, 0.016, 0.13, 8);
+    stacheRightGeo.rotateZ(-Math.PI / 2.3);
+    const stacheRight = new THREE.Mesh(stacheRightGeo, beardMat);
+    stacheRight.position.set(0.065, -0.08, 0.42);
+    headGroup.add(stacheRight);
+
+    // 2. Chin Goatee & Soul Patch
+    const goateeGeo = new THREE.SphereGeometry(0.08, 12, 12);
+    goateeGeo.scale(1.2, 0.9, 0.4);
+    const goatee = new THREE.Mesh(goateeGeo, beardMat);
+    goatee.position.set(0, -0.22, 0.38);
+    headGroup.add(goatee);
+
+    // 3. Jawline Stubble Outline
+    [-0.20, 0.20].forEach((xPos, idx) => {
+      const jawBeardGeo = new THREE.CylinderGeometry(0.018, 0.012, 0.20, 8);
+      jawBeardGeo.rotateZ(idx === 0 ? -0.55 : 0.55);
+      const jawBeard = new THREE.Mesh(jawBeardGeo, beardMat);
+      jawBeard.position.set(xPos, -0.18, 0.32);
+      headGroup.add(jawBeard);
     });
 
-    // Stylized Anime Hair (Spikes & Bangs)
+    // (C) Stylized Modern Haircut (Textured top crop + subtle fringe swept over forehead)
     const hairGroup = new THREE.Group();
     headGroup.add(hairGroup);
 
-    // Hair base dome
-    const hairDomeGeo = new THREE.SphereGeometry(0.51, 24, 24);
-    hairDomeGeo.scale(1.02, 1.05, 1.0);
-    const hairDome = new THREE.Mesh(hairDomeGeo, hairMat);
-    hairDome.position.set(0, 0.08, -0.04);
-    hairGroup.add(hairDome);
+    // Base Hair Shell
+    const hairBaseGeo = new THREE.SphereGeometry(0.49, 24, 24);
+    hairBaseGeo.scale(1.01, 1.04, 0.98);
+    const hairBase = new THREE.Mesh(hairBaseGeo, hairMat);
+    hairBase.position.set(0, 0.07, -0.03);
+    hairGroup.add(hairBase);
 
-    // Bangs & Spikes
-    interface SpikeConfig {
+    // Textured Hair Strands & Fringe (matching Alsaf's hair volume)
+    interface HairStrandConfig {
       pos: [number, number, number];
       rot: [number, number, number];
       scale: [number, number, number];
     }
 
-    const spikeConfigs: SpikeConfig[] = [
-      { pos: [0, 0.48, 0.28], rot: [-0.2, 0, 0.1], scale: [0.18, 0.35, 0.16] },
-      { pos: [-0.22, 0.42, 0.25], rot: [-0.1, 0.3, 0.5], scale: [0.16, 0.32, 0.14] },
-      { pos: [0.22, 0.42, 0.25], rot: [-0.1, -0.3, -0.5], scale: [0.16, 0.32, 0.14] },
-      { pos: [-0.38, 0.22, 0.18], rot: [0.1, 0.4, 0.8], scale: [0.15, 0.28, 0.14] },
-      { pos: [0.38, 0.22, 0.18], rot: [0.1, -0.4, -0.8], scale: [0.15, 0.28, 0.14] },
-      { pos: [-0.12, 0.28, 0.40], rot: [-0.5, 0.2, 0.2], scale: [0.12, 0.22, 0.12] },
-      { pos: [0.14, 0.26, 0.40], rot: [-0.5, -0.2, -0.2], scale: [0.12, 0.22, 0.12] },
+    const hairStrands: HairStrandConfig[] = [
+      // Top Volume
+      { pos: [0, 0.46, 0.16], rot: [-0.15, 0, 0.05], scale: [0.18, 0.26, 0.16] },
+      { pos: [-0.16, 0.44, 0.14], rot: [-0.10, 0.2, 0.3], scale: [0.16, 0.24, 0.14] },
+      { pos: [0.16, 0.44, 0.14], rot: [-0.10, -0.2, -0.3], scale: [0.16, 0.24, 0.14] },
+      // Front Fringe Locks swept across forehead
+      { pos: [-0.10, 0.30, 0.38], rot: [-0.65, 0.25, 0.3], scale: [0.11, 0.20, 0.10] },
+      { pos: [0.08, 0.32, 0.38], rot: [-0.60, -0.20, -0.25], scale: [0.12, 0.20, 0.11] },
+      { pos: [0.24, 0.26, 0.34], rot: [-0.50, -0.35, -0.5], scale: [0.10, 0.18, 0.10] },
+      // Side Taper details
+      { pos: [-0.36, 0.18, 0.15], rot: [0.1, 0.3, 0.6], scale: [0.12, 0.22, 0.12] },
+      { pos: [0.36, 0.18, 0.15], rot: [0.1, -0.3, -0.6], scale: [0.12, 0.22, 0.12] },
     ];
 
-    spikeConfigs.forEach((cfg) => {
-      const coneGeo = new THREE.ConeGeometry(cfg.scale[0], cfg.scale[1], 12);
-      const spike = new THREE.Mesh(coneGeo, hairMat);
-      spike.position.set(cfg.pos[0], cfg.pos[1], cfg.pos[2]);
-      spike.rotation.set(cfg.rot[0], cfg.rot[1], cfg.rot[2]);
-      hairGroup.add(spike);
+    hairStrands.forEach((cfg) => {
+      const coneGeo = new THREE.ConeGeometry(cfg.scale[0], cfg.scale[1], 10);
+      const strand = new THREE.Mesh(coneGeo, hairMat);
+      strand.position.set(cfg.pos[0], cfg.pos[1], cfg.pos[2]);
+      strand.rotation.set(cfg.rot[0], cfg.rot[1], cfg.rot[2]);
+      hairGroup.add(strand);
     });
 
-    // Futuristic Cyan Headset
+    // (D) Futuristic Cyber Earpiece & Headset
     const headsetGroup = new THREE.Group();
     headGroup.add(headsetGroup);
 
-    // Headband
-    const bandGeo = new THREE.TorusGeometry(0.50, 0.04, 12, 32, Math.PI);
-    const band = new THREE.Mesh(bandGeo, headsetMat);
+    // Slim headband
+    const bandGeo = new THREE.TorusGeometry(0.48, 0.025, 10, 32, Math.PI);
+    const band = new THREE.Mesh(bandGeo, headsetChassisMat);
     band.rotation.x = Math.PI / 2;
-    band.position.set(0, 0.05, 0);
+    band.position.set(0, 0.06, 0);
     headsetGroup.add(band);
 
-    // Glowing headband strip
-    const bandStripGeo = new THREE.TorusGeometry(0.51, 0.015, 8, 32, Math.PI);
+    // Glowing cyan strip
+    const bandStripGeo = new THREE.TorusGeometry(0.485, 0.012, 8, 32, Math.PI);
     const bandStrip = new THREE.Mesh(bandStripGeo, cyanGlowMat);
     bandStrip.rotation.x = Math.PI / 2;
-    bandStrip.position.set(0, 0.05, 0);
+    bandStrip.position.set(0, 0.06, 0);
     headsetGroup.add(bandStrip);
 
-    // Earcups with glowing cyan neon visualizer rings
-    [-0.52, 0.52].forEach((xPos, idx) => {
-      const cupGeo = new THREE.CylinderGeometry(0.16, 0.16, 0.09, 24);
+    // Earcups with glowing cyan rings
+    [-0.49, 0.49].forEach((xPos, idx) => {
+      const cupGeo = new THREE.CylinderGeometry(0.13, 0.13, 0.07, 20);
       cupGeo.rotateZ(Math.PI / 2);
-      const cup = new THREE.Mesh(cupGeo, headsetMat);
+      const cup = new THREE.Mesh(cupGeo, headsetChassisMat);
       cup.position.set(xPos, 0.05, 0);
       headsetGroup.add(cup);
 
-      const ringGeo = new THREE.TorusGeometry(0.12, 0.02, 12, 24);
+      const ringGeo = new THREE.TorusGeometry(0.10, 0.018, 10, 20);
       ringGeo.rotateY(Math.PI / 2);
       const ring = new THREE.Mesh(ringGeo, cyanGlowMat);
-      ring.position.set(xPos + (idx === 0 ? -0.04 : 0.04), 0.05, 0);
+      ring.position.set(xPos + (idx === 0 ? -0.035 : 0.035), 0.05, 0);
       headsetGroup.add(ring);
     });
 
-    // Headset Microphone
-    const micArmGeo = new THREE.CylinderGeometry(0.015, 0.015, 0.28, 8);
-    micArmGeo.rotateZ(Math.PI / 3);
-    const micArm = new THREE.Mesh(micArmGeo, headsetMat);
-    micArm.position.set(0.42, -0.08, 0.24);
+    // Headset Mic
+    const micArmGeo = new THREE.CylinderGeometry(0.012, 0.012, 0.24, 8);
+    micArmGeo.rotateZ(Math.PI / 2.8);
+    const micArm = new THREE.Mesh(micArmGeo, headsetChassisMat);
+    micArm.position.set(0.38, -0.08, 0.22);
     headsetGroup.add(micArm);
 
-    const micTipGeo = new THREE.SphereGeometry(0.035, 12, 12);
+    const micTipGeo = new THREE.SphereGeometry(0.028, 10, 10);
     const micTip = new THREE.Mesh(micTipGeo, cyanGlowMat);
-    micTip.position.set(0.26, -0.16, 0.36);
+    micTip.position.set(0.24, -0.15, 0.34);
     headsetGroup.add(micTip);
 
-    // (B) Body & Hoodie Group
+    // (E) Body & Black Hoodie
     const bodyGroup = new THREE.Group();
-    bodyGroup.position.set(0, -0.32, 0);
+    bodyGroup.position.set(0, -0.30, 0);
     characterRoot.add(bodyGroup);
 
     // Hoodie Torso
-    const torsoGeo = new THREE.CylinderGeometry(0.28, 0.36, 0.55, 24);
+    const torsoGeo = new THREE.CylinderGeometry(0.26, 0.34, 0.50, 20);
     const torso = new THREE.Mesh(torsoGeo, hoodieMat);
     bodyGroup.add(torso);
 
-    // Hoodie Collar / Hood bunch
-    const hoodCollarGeo = new THREE.TorusGeometry(0.29, 0.08, 12, 24);
+    // Hoodie Collar Rim
+    const hoodCollarGeo = new THREE.TorusGeometry(0.27, 0.07, 10, 20);
     hoodCollarGeo.rotateX(Math.PI / 2);
     const hoodCollar = new THREE.Mesh(hoodCollarGeo, hoodieMat);
-    hoodCollar.position.set(0, 0.26, 0);
+    hoodCollar.position.set(0, 0.24, 0);
     bodyGroup.add(hoodCollar);
 
-    // Chest Cyan Tech Beacon
-    const chestBeaconGeo = new THREE.CylinderGeometry(0.04, 0.04, 0.015, 16);
+    // Chest Cyan Micro Beacon
+    const chestBeaconGeo = new THREE.CylinderGeometry(0.035, 0.035, 0.012, 12);
     chestBeaconGeo.rotateX(Math.PI / 2);
     const chestBeacon = new THREE.Mesh(chestBeaconGeo, cyanGlowMat);
-    chestBeacon.position.set(0, 0.12, 0.30);
+    chestBeacon.position.set(0, 0.10, 0.28);
     bodyGroup.add(chestBeacon);
 
-    // (C) Animated Pointing Arm (Right Arm)
+    // (F) Pointing Arm (Right Arm)
     const rightArmGroup = new THREE.Group();
-    rightArmGroup.position.set(0.36, 0.16, 0);
+    rightArmGroup.position.set(0.33, 0.14, 0);
     bodyGroup.add(rightArmGroup);
 
-    const rUpperArmGeo = new THREE.CylinderGeometry(0.09, 0.08, 0.24, 16);
+    const rUpperArmGeo = new THREE.CylinderGeometry(0.08, 0.07, 0.22, 14);
     const rUpperArm = new THREE.Mesh(rUpperArmGeo, hoodieMat);
-    rUpperArm.position.set(0.06, -0.10, 0.05);
-    rUpperArm.rotation.set(0.3, 0, -0.3);
+    rUpperArm.position.set(0.05, -0.09, 0.04);
+    rUpperArm.rotation.set(0.25, 0, -0.25);
     rightArmGroup.add(rUpperArm);
 
-    // Forearm & Hand pointing down
+    // Forearm & Pointing Hand
     const rForearmGroup = new THREE.Group();
-    rForearmGroup.position.set(0.12, -0.22, 0.10);
+    rForearmGroup.position.set(0.10, -0.19, 0.08);
     rightArmGroup.add(rForearmGroup);
 
-    const rForearmGeo = new THREE.CylinderGeometry(0.075, 0.07, 0.20, 16);
+    const rForearmGeo = new THREE.CylinderGeometry(0.068, 0.062, 0.18, 14);
     const rForearm = new THREE.Mesh(rForearmGeo, hoodieMat);
-    rForearm.position.set(0, -0.08, 0);
+    rForearm.position.set(0, -0.07, 0);
     rForearmGroup.add(rForearm);
 
     // Hand mesh
-    const handGeo = new THREE.SphereGeometry(0.07, 16, 16);
+    const handGeo = new THREE.SphereGeometry(0.062, 14, 14);
     const hand = new THREE.Mesh(handGeo, skinMat);
-    hand.position.set(0, -0.20, 0.02);
+    hand.position.set(0, -0.17, 0.02);
     rForearmGroup.add(hand);
 
-    // Extended Pointing Finger (Pointing Downward!)
-    const fingerGeo = new THREE.CylinderGeometry(0.025, 0.02, 0.16, 12);
+    // Extended Pointing Finger (Pointing Downwards ↓)
+    const fingerGeo = new THREE.CylinderGeometry(0.022, 0.018, 0.14, 10);
     const finger = new THREE.Mesh(fingerGeo, skinMat);
-    finger.position.set(0, -0.29, 0.03);
+    finger.position.set(0, -0.25, 0.025);
     rForearmGroup.add(finger);
 
-    // Glowing cyan finger ring/hologram tip
-    const fingerTipGeo = new THREE.SphereGeometry(0.026, 12, 12);
+    // Glowing cyan finger ring / precision cursor tip
+    const fingerTipGeo = new THREE.SphereGeometry(0.024, 10, 10);
     const fingerTip = new THREE.Mesh(fingerTipGeo, cyanGlowMat);
-    fingerTip.position.set(0, -0.37, 0.03);
+    fingerTip.position.set(0, -0.32, 0.025);
     rForearmGroup.add(fingerTip);
 
-    // (D) Left Arm (Resting/Cheering)
+    // (G) Left Arm (Casual Rest)
     const leftArmGroup = new THREE.Group();
-    leftArmGroup.position.set(-0.36, 0.16, 0);
+    leftArmGroup.position.set(-0.33, 0.14, 0);
     bodyGroup.add(leftArmGroup);
 
-    const lUpperArmGeo = new THREE.CylinderGeometry(0.09, 0.08, 0.24, 16);
+    const lUpperArmGeo = new THREE.CylinderGeometry(0.08, 0.07, 0.22, 14);
     const lUpperArm = new THREE.Mesh(lUpperArmGeo, hoodieMat);
-    lUpperArm.position.set(-0.06, -0.10, 0.02);
-    lUpperArm.rotation.set(0.1, 0, 0.25);
+    lUpperArm.position.set(-0.05, -0.09, 0.02);
+    lUpperArm.rotation.set(0.1, 0, 0.20);
     leftArmGroup.add(lUpperArm);
 
-    const lHandGeo = new THREE.SphereGeometry(0.07, 16, 16);
+    const lHandGeo = new THREE.SphereGeometry(0.062, 14, 14);
     const lHand = new THREE.Mesh(lHandGeo, skinMat);
-    lHand.position.set(-0.12, -0.24, 0.08);
+    lHand.position.set(-0.10, -0.21, 0.06);
     leftArmGroup.add(lHand);
 
-    // (E) Orbiting Holographic Reticle Ring
-    const holoRingGeo = new THREE.TorusGeometry(0.78, 0.015, 8, 36);
+    // (H) Orbiting Holographic Cyber Ring
+    const holoRingGeo = new THREE.TorusGeometry(0.72, 0.012, 8, 32);
     const holoRingMat = new THREE.MeshBasicMaterial({
       color: 0x22d3ee,
       transparent: true,
-      opacity: 0.45,
+      opacity: 0.40,
     });
     const holoRing = new THREE.Mesh(holoRingGeo, holoRingMat);
     holoRing.rotation.x = Math.PI / 2.3;
-    holoRing.position.set(0, -0.05, 0);
+    holoRing.position.set(0, -0.06, 0);
     characterRoot.add(holoRing);
 
     // 5. Interactive Animation Loop & Pointer Tracking
@@ -354,8 +396,8 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
       const dx = (e.clientX - centerX) / (window.innerWidth / 2);
       const dy = (e.clientY - centerY) / (window.innerHeight / 2);
 
-      targetRotY = THREE.MathUtils.clamp(dx * 0.75, -0.65, 0.65);
-      targetRotX = THREE.MathUtils.clamp(dy * 0.45, -0.40, 0.40);
+      targetRotY = THREE.MathUtils.clamp(dx * 0.70, -0.60, 0.60);
+      targetRotX = THREE.MathUtils.clamp(dy * 0.40, -0.35, 0.35);
     };
 
     window.addEventListener("mousemove", onMouseMove, { passive: true });
@@ -366,7 +408,7 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
       const elapsedTime = clock.getElapsedTime();
 
       // (a) Buoyant zero-G hover levitation
-      const hoverFloatY = Math.sin(elapsedTime * 2.4) * 0.07;
+      const hoverFloatY = Math.sin(elapsedTime * 2.4) * 0.05;
       characterRoot.position.y = hoverFloatY + jumpY;
 
       // (b) Head & Eye Tracking with smooth easing
@@ -374,19 +416,19 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
       curRotX += (targetRotX - curRotX) * 0.08;
 
       headGroup.rotation.y = curRotY;
-      headGroup.rotation.x = curRotX + 0.04;
-      headGroup.rotation.z = Math.sin(elapsedTime * 1.8) * 0.03;
+      headGroup.rotation.x = curRotX + 0.03;
+      headGroup.rotation.z = Math.sin(elapsedTime * 1.8) * 0.02;
 
       // (c) Rhythmic pointing gesture animation (Right Hand points down excitedly!)
       const pointingCycle = Math.sin(elapsedTime * 4.5);
-      rightArmGroup.rotation.x = 0.35 + pointingCycle * 0.18;
-      rForearmGroup.rotation.x = -0.25 + pointingCycle * 0.12;
+      rightArmGroup.rotation.x = 0.30 + pointingCycle * 0.16;
+      rForearmGroup.rotation.x = -0.22 + pointingCycle * 0.10;
 
       // (d) Left arm subtle breathing swing
-      leftArmGroup.rotation.z = Math.sin(elapsedTime * 2.0) * 0.06;
+      leftArmGroup.rotation.z = Math.sin(elapsedTime * 2.0) * 0.05;
 
       // (e) Orbiting Holographic Ring Rotation
-      holoRing.rotation.z = elapsedTime * 0.8;
+      holoRing.rotation.z = elapsedTime * 0.75;
 
       // (f) Blinking cycle
       blinkTimer += 0.016;
@@ -401,7 +443,7 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
       // (g) Jump physics on click/hover
       if (jumpY > 0 || jumpVel !== 0) {
         jumpY += jumpVel;
-        jumpVel -= 0.018;
+        jumpVel -= 0.016;
         if (jumpY <= 0) {
           jumpY = 0;
           jumpVel = 0;
@@ -438,24 +480,24 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
         }
       }}
       aria-label="Interactive 3D animated character guide. Click to scroll down to workstation and projects"
-      className="group relative inline-flex flex-col sm:flex-row items-center gap-3 select-none cursor-pointer py-1 transition-transform duration-300 hover:scale-[1.03] focus-visible:outline-2 focus-visible:outline-[var(--focus-ring)] rounded-xs"
+      className="group relative inline-flex items-center gap-2.5 select-none cursor-pointer py-0.5 transition-transform duration-300 hover:scale-[1.02] focus-visible:outline-2 focus-visible:outline-[var(--focus-ring)] rounded-xs"
     >
       {/* Speech Bubble / Dialogue Balloon */}
       <div
-        className={`relative order-2 sm:order-1 px-3.5 py-1.5 rounded-full border transition-all duration-300 ${
+        className={`relative px-3 py-1 rounded-full border transition-all duration-300 ${
           hovered
-            ? "border-[var(--accent)] bg-[var(--surface-raised)] shadow-[0_0_16px_var(--accent-glow)] scale-[1.03]"
-            : "border-[var(--hairline-strong)] bg-[var(--surface-raised)]/90 shadow-md"
+            ? "border-[var(--accent)] bg-[var(--surface-raised)] shadow-[0_0_12px_var(--accent-glow)] scale-[1.02]"
+            : "border-[var(--hairline-strong)] bg-[var(--surface-raised)]/90 shadow-xs"
         } backdrop-blur-md text-left`}
       >
         <div className="flex items-center gap-2 font-mono text-[11px] text-[var(--text)]">
           <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)] animate-pulse shadow-[0_0_6px_var(--accent)]" aria-hidden="true" />
-          <span className="font-semibold tracking-tight text-[var(--accent)]">
+          <span className="font-medium tracking-tight text-[var(--accent)]">
             Scroll down for workstation &amp; projects!
           </span>
           <span
             className={`inline-block font-bold text-[var(--accent)] transition-transform duration-200 ${
-              hovered ? "translate-y-1 scale-125" : "animate-anime-pointer"
+              hovered ? "translate-y-0.5 scale-110" : "animate-anime-pointer"
             }`}
             aria-hidden="true"
           >
@@ -466,30 +508,30 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
         {/* Comic Speech Tail / Arrow pointer towards mascot */}
         <div
           aria-hidden="true"
-          className="hidden sm:block absolute right-[-6px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[5px] border-t-transparent border-b-[5px] border-b-transparent border-l-[6px] border-l-[var(--surface-raised)]"
+          className="hidden sm:block absolute right-[-5px] top-1/2 -translate-y-1/2 w-0 h-0 border-t-[4px] border-t-transparent border-b-[4px] border-b-transparent border-l-[5px] border-l-[var(--surface-raised)]"
         />
       </div>
 
       {/* Real-time WebGL 3D Animated Character Canvas */}
-      <div className="relative order-1 sm:order-2 shrink-0 h-20 w-20 sm:h-24 sm:w-24 flex items-center justify-center">
+      <div className="relative shrink-0 h-12 w-12 sm:h-14 sm:w-14 flex items-center justify-center">
         {/* Luminous Cyan/Teal Halo */}
         <div
           aria-hidden="true"
-          className="absolute inset-0 rounded-full bg-[radial-gradient(circle,var(--accent)_0%,transparent_70%)] opacity-35 blur-md pointer-events-none animate-anime-pulse"
+          className="absolute inset-0 rounded-full bg-[radial-gradient(circle,var(--accent)_0%,transparent_70%)] opacity-30 blur-sm pointer-events-none animate-anime-pulse"
         />
 
         {/* 3D WebGL Canvas */}
         <canvas
           ref={canvasRef}
-          width={200}
-          height={200}
-          className="relative w-full h-full object-contain filter drop-shadow-[0_4px_16px_rgba(0,0,0,0.5)] transition-transform duration-300 group-hover:scale-110"
+          width={160}
+          height={160}
+          className="relative w-full h-full object-contain filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)] transition-transform duration-300 group-hover:scale-105"
         />
 
         {/* Small Pointing Hand Indicator Badge */}
         <span
           aria-hidden="true"
-          className="absolute bottom-0 right-0 h-5 w-5 rounded-full bg-[var(--accent)] text-[#0a0f14] flex items-center justify-center text-[10px] font-extrabold shadow-sm border border-[var(--surface)] animate-anime-pointer"
+          className="absolute bottom-0 right-0 h-4 w-4 rounded-full bg-[var(--accent)] text-[#0a0f14] flex items-center justify-center text-[9px] font-extrabold shadow-xs border border-[var(--surface)] animate-anime-pointer"
         >
           ↓
         </span>

@@ -66,16 +66,16 @@ export function Hero() {
     <section
       id="hero"
       aria-labelledby="hero-name"
-      className="relative min-h-[calc(100vh-5.5rem)] flex flex-col justify-between pt-4 pb-6 will-change-transform text-center"
+      className="relative min-h-[calc(100vh-4.5rem)] flex flex-col justify-between pt-2 pb-2 will-change-transform text-center"
     >
       <div
         ref={stageRef}
-        className={`my-auto py-6 flex flex-col items-center justify-center transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        className={`my-auto py-2 sm:py-4 flex flex-col items-center justify-center transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           resolved ? "opacity-100 translate-y-0 filter-none" : "opacity-0 translate-y-6 blur-[3px]"
         }`}
       >
         {/* Kicker Technical Badge */}
-        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-xs border border-[var(--hairline-strong)] bg-[var(--surface-raised)] font-annotation text-[11px] uppercase tracking-[0.20em] text-[var(--accent)] mb-5 shadow-xs">
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-xs border border-[var(--hairline-strong)] bg-[var(--surface-raised)] font-annotation text-[11px] uppercase tracking-[0.20em] text-[var(--accent)] mb-4 shadow-xs">
           <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)] animate-pulse shadow-[0_0_8px_var(--accent)]" aria-hidden="true" />
           <span>BUILDER · CSE · INTELLIGENT SYSTEMS</span>
         </div>
@@ -84,7 +84,7 @@ export function Hero() {
         <h1
           id="hero-name"
           data-cursor="scan"
-          className="text-5xl sm:text-7xl md:text-8xl lg:text-[104px] font-extrabold tracking-[-0.04em] uppercase leading-[0.95] text-[var(--text)] select-none drop-shadow-xs group transition-transform duration-300"
+          className="text-5xl sm:text-7xl md:text-8xl lg:text-[100px] font-extrabold tracking-[-0.04em] uppercase leading-[0.95] text-[var(--text)] select-none drop-shadow-xs group transition-transform duration-300"
         >
           <span className="inline-block transition-transform duration-500 group-hover:scale-[1.02] group-hover:text-[var(--accent)]">
             MOHD
@@ -97,7 +97,7 @@ export function Hero() {
         {/* Core Philosophy / Headline in Vibrant Cyan-Teal / Deep Teal */}
         <p
           data-cursor="scan"
-          className="mt-6 font-annotation text-xs sm:text-sm uppercase tracking-[0.18em] text-[var(--accent)] font-semibold max-w-xl mx-auto"
+          className="mt-5 font-annotation text-xs sm:text-sm uppercase tracking-[0.18em] text-[var(--accent)] font-semibold max-w-xl mx-auto"
         >
           I turn ideas into working things – and I figure them out in the open.
         </p>
@@ -105,18 +105,18 @@ export function Hero() {
         {/* Supporting Context */}
         <p
           data-cursor="scan"
-          className="mt-3 text-sm sm:text-base md:text-lg leading-relaxed text-[var(--muted)] max-w-2xl mx-auto font-normal"
+          className="mt-2.5 text-sm sm:text-base md:text-lg leading-relaxed text-[var(--muted)] max-w-2xl mx-auto font-normal"
         >
           Documenting software experiments, algorithmic logic, and AI systems. Building practical tools and learning in public on the journey toward impactful intelligent products.
         </p>
 
         {/* Centered Action Cues */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
           <button
             type="button"
             onClick={scrollToProject}
             data-cursor="clickable"
-            className="group inline-flex items-center gap-2 font-annotation text-xs sm:text-sm text-[var(--accent)] border border-[var(--accent)]/50 px-5 py-2.5 rounded-xs bg-[var(--accent)]/[0.08] hover:bg-[var(--accent)] hover:text-[var(--surface)] transition-all duration-200 shadow-xs font-medium"
+            className="group inline-flex items-center gap-2 font-annotation text-xs sm:text-sm text-[var(--accent)] border border-[var(--accent)]/50 px-5 py-2 rounded-xs bg-[var(--accent)]/[0.08] hover:bg-[var(--accent)] hover:text-[var(--surface)] transition-all duration-200 shadow-xs font-medium"
           >
             <span>Explore CAMPLX</span>
             <span className="transition-transform duration-150 group-hover:translate-x-1" aria-hidden="true">
@@ -128,7 +128,7 @@ export function Hero() {
             type="button"
             onClick={scrollToIdentity}
             data-cursor="clickable"
-            className="inline-flex items-center gap-2 font-annotation text-xs sm:text-sm text-[var(--text)] border border-[var(--hairline-strong)] hover:border-[var(--accent)] hover:text-[var(--accent)] hover:bg-[var(--surface-raised)] px-4 py-2.5 rounded-xs transition-all duration-200"
+            className="inline-flex items-center gap-2 font-annotation text-xs sm:text-sm text-[var(--text)] border border-[var(--hairline-strong)] hover:border-[var(--accent)] hover:text-[var(--accent)] hover:bg-[var(--surface-raised)] px-4 py-2 rounded-xs transition-all duration-200"
           >
             <span>View Interactive Object</span>
             <span aria-hidden="true">↓</span>
@@ -137,7 +137,7 @@ export function Hero() {
       </div>
 
       {/* Bottom Viewport Anchor & 3D Animated Character Guide */}
-      <div className="pt-4 border-t border-[var(--hairline)] flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-[11px] text-[var(--muted)] select-none">
+      <div className="pt-2 border-t border-[var(--hairline)] flex flex-col sm:flex-row items-center justify-between gap-3 font-mono text-[11px] text-[var(--muted)] select-none">
         <AnimeCharacter3D onScrollDown={scrollToIdentity} />
         <span className="hidden sm:inline text-[10px] tracking-wider font-mono">SEC // 01 · OVERVIEW</span>
       </div>
