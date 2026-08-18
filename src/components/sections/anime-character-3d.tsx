@@ -30,11 +30,11 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
     if (!canvas) return;
 
     // 1. Scene & Camera Setup
-    const width = 140;
-    const height = 140;
+    const width = 200;
+    const height = 200;
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(34, width / height, 0.1, 100);
-    camera.position.set(0, 0.22, 2.25);
+    const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
+    camera.position.set(0, -0.02, 2.65);
 
     const renderer = new THREE.WebGLRenderer({
       canvas,
@@ -45,74 +45,74 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
     renderer.setSize(width, height);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    // 2. Realistic Studio & Cyber Lighting Rig
-    const ambientLight = new THREE.AmbientLight(0xffffff, 1.5);
+    // 2. High-Clarity Studio & Cyber Lighting Rig
+    const ambientLight = new THREE.AmbientLight(0xffffff, 2.0);
     scene.add(ambientLight);
 
-    const keyLight = new THREE.DirectionalLight(0xfff5ea, 2.4);
-    keyLight.position.set(2, 3, 3);
+    const keyLight = new THREE.DirectionalLight(0xfffaee, 3.0);
+    keyLight.position.set(2.5, 3.5, 3.5);
     scene.add(keyLight);
 
-    const cyanRimLight = new THREE.DirectionalLight(0x22d3ee, 3.8);
-    cyanRimLight.position.set(-3, 1.2, -1);
+    const cyanRimLight = new THREE.DirectionalLight(0x22d3ee, 4.2);
+    cyanRimLight.position.set(-3.5, 1.5, -0.8);
     scene.add(cyanRimLight);
 
-    const warmFillLight = new THREE.PointLight(0xd97706, 1.8, 8);
-    warmFillLight.position.set(2, -1, 2);
-    scene.add(warmFillLight);
+    const tealFillLight = new THREE.PointLight(0x0d9488, 2.8, 8);
+    tealFillLight.position.set(0, -1.8, 2.2);
+    scene.add(tealFillLight);
 
-    // 3. Materials — Modeled after Mohd Alsaf's portrait
-    // Warm natural medium-olive skin tone
+    // 3. Materials — Calibrated directly from Mohd Alsaf's portrait
+    // Warm natural olive skin complexion
     const skinMat = new THREE.MeshStandardMaterial({
-      color: 0xc88f60,
-      roughness: 0.55,
-      metalness: 0.04,
+      color: 0xdeaa78,
+      roughness: 0.45,
+      metalness: 0.05,
     });
 
     // Dark espresso hair
     const hairMat = new THREE.MeshStandardMaterial({
-      color: 0x141212,
-      roughness: 0.75,
-      metalness: 0.08,
+      color: 0x161312,
+      roughness: 0.70,
+      metalness: 0.10,
     });
 
     // Trimmed beard & mustache material
     const beardMat = new THREE.MeshStandardMaterial({
-      color: 0x181413,
+      color: 0x1a1614,
       roughness: 0.85,
       metalness: 0.02,
     });
 
     // Jet black hoodie
     const hoodieMat = new THREE.MeshStandardMaterial({
-      color: 0x0f1115,
-      roughness: 0.65,
-      metalness: 0.12,
+      color: 0x111318,
+      roughness: 0.60,
+      metalness: 0.15,
     });
 
-    // Glowing cyan cyber accent
+    // Vibrant Glowing Cyan Cyber Accent
     const cyanGlowMat = new THREE.MeshStandardMaterial({
       color: 0x22d3ee,
       emissive: 0x22d3ee,
-      emissiveIntensity: 1.4,
-      roughness: 0.2,
-      metalness: 0.8,
+      emissiveIntensity: 1.6,
+      roughness: 0.15,
+      metalness: 0.85,
     });
 
     const headsetChassisMat = new THREE.MeshStandardMaterial({
       color: 0x1e293b,
-      roughness: 0.35,
-      metalness: 0.7,
+      roughness: 0.30,
+      metalness: 0.75,
     });
 
     const eyeWhiteMat = new THREE.MeshStandardMaterial({
-      color: 0xfcfcfc,
-      roughness: 0.1,
+      color: 0xffffff,
+      roughness: 0.05,
     });
 
     const pupilMat = new THREE.MeshStandardMaterial({
-      color: 0x100c0a,
-      roughness: 0.1,
+      color: 0x140e0b,
+      roughness: 0.08,
     });
 
     const eyeHighlightMat = new THREE.MeshBasicMaterial({
@@ -128,7 +128,7 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
     headGroup.position.set(0, 0.32, 0);
     characterRoot.add(headGroup);
 
-    // Head base (natural anime chibi proportions)
+    // Head base (cute anime chibi proportions)
     const headGeo = new THREE.SphereGeometry(0.46, 32, 32);
     headGeo.scale(0.98, 1.0, 0.92);
     const headMesh = new THREE.Mesh(headGeo, skinMat);
@@ -140,27 +140,27 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
 
     [-0.16, 0.16].forEach((xPos, idx) => {
       // Eye White
-      const eyeGeo = new THREE.SphereGeometry(0.095, 16, 16);
+      const eyeGeo = new THREE.SphereGeometry(0.10, 16, 16);
       eyeGeo.scale(0.90, 1.15, 0.38);
       const eye = new THREE.Mesh(eyeGeo, eyeWhiteMat);
       eye.position.set(xPos, 0.05, 0.38);
       eyeGroup.add(eye);
 
       // Pupil (Dark espresso)
-      const pupilGeo = new THREE.SphereGeometry(0.075, 16, 16);
+      const pupilGeo = new THREE.SphereGeometry(0.078, 16, 16);
       pupilGeo.scale(0.85, 1.05, 0.38);
       const pupil = new THREE.Mesh(pupilGeo, pupilMat);
       pupil.position.set(xPos * 0.96, 0.04, 0.42);
       eyeGroup.add(pupil);
 
       // Cyan Iris Sparkle Ring
-      const irisRingGeo = new THREE.TorusGeometry(0.048, 0.010, 8, 16);
+      const irisRingGeo = new THREE.TorusGeometry(0.050, 0.010, 8, 16);
       const irisRing = new THREE.Mesh(irisRingGeo, cyanGlowMat);
       irisRing.position.set(xPos * 0.96, 0.04, 0.44);
       eyeGroup.add(irisRing);
 
       // Specular Catchlight
-      const catchlightGeo = new THREE.SphereGeometry(0.022, 8, 8);
+      const catchlightGeo = new THREE.SphereGeometry(0.024, 8, 8);
       const catchlight = new THREE.Mesh(catchlightGeo, eyeHighlightMat);
       catchlight.position.set(xPos + (idx === 0 ? 0.02 : -0.02), 0.075, 0.45);
       eyeGroup.add(catchlight);
@@ -188,7 +188,7 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
     headGroup.add(stacheRight);
 
     // 2. Chin Goatee & Soul Patch
-    const goateeGeo = new THREE.SphereGeometry(0.08, 12, 12);
+    const goateeGeo = new THREE.SphereGeometry(0.085, 12, 12);
     goateeGeo.scale(1.2, 0.9, 0.4);
     const goatee = new THREE.Mesh(goateeGeo, beardMat);
     goatee.position.set(0, -0.22, 0.38);
@@ -203,7 +203,7 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
       headGroup.add(jawBeard);
     });
 
-    // (C) Stylized Modern Haircut (Textured top crop + subtle fringe swept over forehead)
+    // (C) Stylized Modern Haircut (Textured top crop + fringe swept over forehead)
     const hairGroup = new THREE.Group();
     headGroup.add(hairGroup);
 
@@ -305,7 +305,7 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
     hoodCollar.position.set(0, 0.24, 0);
     bodyGroup.add(hoodCollar);
 
-    // Chest Cyan Micro Beacon
+    // Chest Cyan Tech Beacon
     const chestBeaconGeo = new THREE.CylinderGeometry(0.035, 0.035, 0.012, 12);
     chestBeaconGeo.rotateX(Math.PI / 2);
     const chestBeacon = new THREE.Mesh(chestBeaconGeo, cyanGlowMat);
@@ -372,7 +372,7 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
     const holoRingMat = new THREE.MeshBasicMaterial({
       color: 0x22d3ee,
       transparent: true,
-      opacity: 0.40,
+      opacity: 0.45,
     });
     const holoRing = new THREE.Mesh(holoRingGeo, holoRingMat);
     holoRing.rotation.x = Math.PI / 2.3;
@@ -480,19 +480,19 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
         }
       }}
       aria-label="Interactive 3D animated character guide. Click to scroll down to workstation and projects"
-      className="group relative inline-flex items-center gap-2.5 select-none cursor-pointer py-0.5 transition-transform duration-300 hover:scale-[1.02] focus-visible:outline-2 focus-visible:outline-[var(--focus-ring)] rounded-xs"
+      className="group relative inline-flex items-center gap-3 select-none cursor-pointer py-1 transition-transform duration-300 hover:scale-[1.02] focus-visible:outline-2 focus-visible:outline-[var(--focus-ring)] rounded-xs"
     >
       {/* Speech Bubble / Dialogue Balloon */}
       <div
-        className={`relative px-3 py-1 rounded-full border transition-all duration-300 ${
+        className={`relative px-3.5 py-1.5 rounded-full border transition-all duration-300 ${
           hovered
-            ? "border-[var(--accent)] bg-[var(--surface-raised)] shadow-[0_0_12px_var(--accent-glow)] scale-[1.02]"
+            ? "border-[var(--accent)] bg-[var(--surface-raised)] shadow-[0_0_14px_var(--accent-glow)] scale-[1.02]"
             : "border-[var(--hairline-strong)] bg-[var(--surface-raised)]/90 shadow-xs"
         } backdrop-blur-md text-left`}
       >
         <div className="flex items-center gap-2 font-mono text-[11px] text-[var(--text)]">
           <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)] animate-pulse shadow-[0_0_6px_var(--accent)]" aria-hidden="true" />
-          <span className="font-medium tracking-tight text-[var(--accent)]">
+          <span className="font-semibold tracking-tight text-[var(--accent)]">
             Scroll down for workstation &amp; projects!
           </span>
           <span
@@ -512,15 +512,29 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
         />
       </div>
 
-      {/* Real-time WebGL 3D Animated Character Badge */}
-      <div className="relative shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-full border-2 border-[var(--accent)] bg-[#0d141e] overflow-hidden shadow-md transition-transform duration-300 group-hover:scale-110 flex items-center justify-center">
+      {/* Real-time WebGL 3D Animated Character Canvas (Full body, uncropped, floating) */}
+      <div className="relative shrink-0 h-16 w-16 sm:h-20 sm:w-20 flex items-center justify-center">
+        {/* Luminous Cyan/Teal Halo */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 rounded-full bg-[radial-gradient(circle,var(--accent)_0%,transparent_70%)] opacity-35 blur-md pointer-events-none animate-anime-pulse"
+        />
+
         {/* 3D WebGL Canvas */}
         <canvas
           ref={canvasRef}
-          width={140}
-          height={140}
-          className="relative w-full h-full object-cover filter drop-shadow-[0_2px_6px_rgba(0,0,0,0.3)]"
+          width={200}
+          height={200}
+          className="relative w-full h-full object-contain filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.35)] transition-transform duration-300 group-hover:scale-105"
         />
+
+        {/* Small Pointing Hand Indicator Badge */}
+        <span
+          aria-hidden="true"
+          className="absolute bottom-0 right-0 h-4.5 w-4.5 rounded-full bg-[var(--accent)] text-[#0a0f14] flex items-center justify-center text-[9px] font-extrabold shadow-xs border border-[var(--surface)] animate-anime-pointer"
+        >
+          ↓
+        </span>
       </div>
     </div>
   );
