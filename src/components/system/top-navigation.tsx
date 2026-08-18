@@ -15,6 +15,12 @@ import { HANDLES } from "@/constants";
  */
 export function TopNavigation() {
   const [activeSection, setActiveSection] = useState<"overview" | "whoami" | "campusswap">("overview");
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const t = setTimeout(() => setMounted(true), 60);
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -45,7 +51,11 @@ export function TopNavigation() {
   };
 
   return (
-    <header className="w-full border-b border-[var(--hairline)] bg-[var(--surface)]/80 backdrop-blur-md sticky top-0 z-40 transition-colors">
+    <header
+      className={`w-full border-b border-[var(--hairline)] bg-[var(--surface)]/80 backdrop-blur-md sticky top-0 z-40 transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        mounted ? "translate-y-0 opacity-100" : "-translate-y-6 opacity-0"
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 py-3 flex items-center justify-between">
         {/* Left: System Designation */}
         <div className="flex items-center gap-3 font-annotation text-xs">

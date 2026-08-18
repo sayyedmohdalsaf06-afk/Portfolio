@@ -8,8 +8,14 @@ export function AnimeCharacter3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [hovered, setHovered] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [currentSection, setCurrentSection] = useState<"hero" | "whoami" | "project-experience">("hero");
   const prefersReduced = useReducedMotion();
+
+  useEffect(() => {
+    const t = setTimeout(() => setMounted(true), 480);
+    return () => clearTimeout(t);
+  }, []);
 
   // Track active scroll stop dynamically as user slides down
   useEffect(() => {
@@ -484,7 +490,11 @@ export function AnimeCharacter3D() {
         }
       }}
       aria-label={`Guide Bot: ${dialogue.title}. ${dialogue.cue}`}
-      className="fixed bottom-4 right-4 sm:bottom-6 sm:right-8 z-40 group inline-flex items-center gap-2.5 select-none cursor-pointer p-1 rounded-full transition-all duration-300 hover:scale-[1.04] focus-visible:outline-2 focus-visible:outline-[var(--focus-ring)]"
+      className={`fixed bottom-4 right-4 sm:bottom-6 sm:right-8 z-40 group inline-flex items-center gap-2.5 select-none cursor-pointer p-1 rounded-full transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.04] focus-visible:outline-2 focus-visible:outline-[var(--focus-ring)] ${
+        mounted
+          ? "opacity-100 scale-100 translate-y-0"
+          : "opacity-0 scale-75 translate-y-6 pointer-events-none"
+      }`}
     >
       {/* Speech Bubble / Dynamic Waypoint Dialogue Balloon */}
       <div

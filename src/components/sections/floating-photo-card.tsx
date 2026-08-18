@@ -18,11 +18,17 @@ import { useReducedMotion } from "@/hooks/use-reduced-motion";
  */
 export function FloatingPhotoCard() {
   const [imgError, setImgError] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const sheenRef = useRef<HTMLDivElement>(null);
   const glowRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const prefersReduced = useReducedMotion();
+
+  useEffect(() => {
+    const t = setTimeout(() => setMounted(true), 120);
+    return () => clearTimeout(t);
+  }, []);
 
   useEffect(() => {
     if (prefersReduced || typeof window === "undefined") return;
@@ -207,7 +213,11 @@ export function FloatingPhotoCard() {
     <aside
       ref={containerRef}
       aria-label="Floating identity card"
-      className="w-full lg:w-[320px] shrink-0 lg:sticky lg:top-20 flex flex-col items-center self-start"
+      className={`w-full lg:w-[320px] shrink-0 lg:sticky lg:top-20 flex flex-col items-center self-start transition-all duration-800 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        mounted
+          ? "opacity-100 translate-x-0 filter-none"
+          : "opacity-0 -translate-x-8 filter blur-[2px]"
+      }`}
     >
       {/* 3D Perspective Stage */}
       <div className="relative w-full [perspective:1200px]">
