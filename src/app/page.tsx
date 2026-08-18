@@ -3,12 +3,14 @@ import { FloatingPhotoCard } from "@/components/sections/floating-photo-card";
 import { IdentityTerminal } from "@/components/sections/identity-terminal";
 import { ProjectExperience } from "@/components/sections/project-experience";
 import { AnimeCharacter3D } from "@/components/sections/anime-character-3d";
+import { OSBootSequence } from "@/components/system/os-boot-sequence";
 import { TopNavigation } from "@/components/system/top-navigation";
 
 /**
  * Portfolio v2 ("In Focus") — Main Spatial Workspace.
  *
  * Layout Structure:
+ * - Boot Sequence: Futuristic OS Boot Sequence on initial load
  * - Top: Modern System Navigation (Status, Waypoints, Theme Toggle)
  * - Main 2-Column Split:
  *   - Left: 3D Floating Identity Photo Card (Tactile Builder Dossier)
@@ -18,6 +20,9 @@ import { TopNavigation } from "@/components/system/top-navigation";
 export default function HomePage() {
   return (
     <div className="relative min-h-screen z-1 flex flex-col">
+      {/* High-Tech OS Boot Sequence Intro */}
+      <OSBootSequence />
+
       {/* Top Workspace System Navigation Bar */}
       <TopNavigation />
 
