@@ -33,8 +33,8 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
     const width = 160;
     const height = 160;
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 100);
-    camera.position.set(0, 0.04, 2.7);
+    const camera = new THREE.PerspectiveCamera(36, width / height, 0.1, 100);
+    camera.position.set(0, 0.14, 2.45);
 
     const renderer = new THREE.WebGLRenderer({
       canvas,
