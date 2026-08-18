@@ -176,21 +176,21 @@ export function ProjectExperience() {
     }
 
     function composeTransforms() {
-      // 1. Dramatic 3D Pop-Up Animation with lively spring bounce on scroll
+      // 1. High-Impact 3D Pop-Up Animation with pronounced spring overshoot on scroll
       const t = curArrivalProgress;
       const popProgress = t < 1
-        ? 1 - Math.pow(1 - t, 2.6) + Math.sin(t * Math.PI) * 0.05
+        ? 1 - Math.pow(1 - t, 2.4) + Math.sin(t * Math.PI) * 0.08
         : 1;
 
-      const popSlideY = (1 - clamp(popProgress, 0, 1.06)) * 64; // Lifts up 64px from below
-      const popSlideZ = (1 - clamp(popProgress, 0, 1.06)) * -160; // Enters from -160px depth in Z-space
-      const popPitchX = (1 - clamp(popProgress, 0, 1.06)) * 14; // Pitches flat from 14deg
-      const popScale = 0.82 + clamp(popProgress, 0, 1.06) * 0.18; // Scales up from 0.82 to 1.0
-      const popOpacity = clamp(popProgress * 1.3, 0, 1);
+      const popSlideY = (1 - clamp(popProgress, 0, 1.08)) * 96; // Lifts up 96px from below
+      const popSlideZ = (1 - clamp(popProgress, 0, 1.08)) * -240; // Enters from -240px depth in 3D perspective
+      const popPitchX = (1 - clamp(popProgress, 0, 1.08)) * 18; // Pitches flat from 18deg
+      const popScale = 0.74 + clamp(popProgress, 0, 1.06) * 0.26; // Scales up from 0.74 to 1.0
+      const popOpacity = clamp(popProgress * 1.5, 0, 1);
 
       // 2. Drag Banking & Displacement
-      const dragBankZ = dragCurX * 0.24;
-      const dragBankX = dragCurY * -0.16;
+      const dragBankZ = dragCurX * 0.28;
+      const dragBankX = dragCurY * -0.20;
 
       // 3. Combined Composition
       const totalRotX = curRotX + popPitchX + dragBankX;
@@ -207,32 +207,32 @@ export function ProjectExperience() {
 
       // 4. Dynamic Holographic Glare Movement
       if (sheen) {
-        const glareY = localMouseY + (1 - clamp(popProgress, 0, 1)) * 90;
-        sheen.style.background = `radial-gradient(circle 420px at ${localMouseX}px ${glareY.toFixed(1)}px, rgba(138, 160, 255, 0.20), transparent 70%)`;
+        const glareY = localMouseY + (1 - clamp(popProgress, 0, 1)) * 120;
+        sheen.style.background = `radial-gradient(circle 460px at ${localMouseX}px ${glareY.toFixed(1)}px, rgba(138, 160, 255, 0.26), transparent 70%)`;
       }
 
-      // 5. Breathing & Radiant Pop Underglow
+      // 5. Breathing & Radiant Pop Underglow Aura
       if (glow) {
-        const glowScale = 0.76 + popProgress * 0.34 + (dragging ? 0.16 : 0);
-        const glowOpacity = clamp(popProgress * 0.48 + (dragging ? 0.25 : 0), 0, 0.85);
+        const glowScale = 0.70 + popProgress * 0.42 + (dragging ? 0.20 : 0);
+        const glowOpacity = clamp(popProgress * 0.58 + (dragging ? 0.30 : 0), 0, 0.90);
         glow.style.transform = `translate3d(${totalTransX.toFixed(2)}px, ${(totalTransY + 16).toFixed(2)}px, -40px) scale(${glowScale.toFixed(3)})`;
         glow.style.opacity = `${glowOpacity.toFixed(2)}`;
       }
 
       // 6. Dynamic Elevation Shadow
-      const shadowX = (-totalRotY * 2.5 + dragCurX * 0.25).toFixed(1);
-      const shadowY = (totalRotX * 2.5 + 12 + popProgress * 12 + Math.abs(dragCurY) * 0.35).toFixed(1);
-      const shadowBlur = (16 + popProgress * 28).toFixed(1);
+      const shadowX = (-totalRotY * 2.8 + dragCurX * 0.28).toFixed(1);
+      const shadowY = (totalRotX * 2.8 + 14 + popProgress * 16 + Math.abs(dragCurY) * 0.4).toFixed(1);
+      const shadowBlur = (16 + popProgress * 36).toFixed(1);
       card!.style.boxShadow = `${shadowX}px ${shadowY}px ${shadowBlur}px var(--hairline-strong)`;
     }
 
     function frame() {
       // (a) Silky smooth pop-up progress lerp
-      curArrivalProgress += (targetArrivalProgress - curArrivalProgress) * 0.085;
+      curArrivalProgress += (targetArrivalProgress - curArrivalProgress) * 0.09;
 
       // (b) Pointer 3D tilt easing
-      curRotX += (targetRotX - curRotX) * 0.10;
-      curRotY += (targetRotY - curRotY) * 0.10;
+      curRotX += (targetRotX - curRotX) * 0.11;
+      curRotY += (targetRotY - curRotY) * 0.11;
 
       // (c) Elastic drag spring settle
       if (!dragging) {
@@ -267,8 +267,8 @@ export function ProjectExperience() {
         if (!dragging) {
           const nx = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
           const ny = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
-          targetRotX = -ny * 5.0;
-          targetRotY = nx * 5.0;
+          targetRotX = -ny * 7.5;
+          targetRotY = nx * 7.5;
         }
       } else if (!dragging) {
         targetRotX = 0;
