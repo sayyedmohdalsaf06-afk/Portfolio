@@ -47,48 +47,24 @@ export function FloatingPhotoCard() {
     let localMouseX = 160;
     let localMouseY = 180;
     let time = 0;
-
-    // Scroll-driven dynamic pop-up & momentum physics
-    let lastScrollY = window.scrollY;
-    let targetScrollVel = 0;
-    let curScrollVel = 0;
-    let scrollPopElevate = 0;
-    let targetPopElevate = 0;
-
     let rafId: number | null = null;
 
     function clamp(v: number, lo: number, hi: number) {
       return v < lo ? lo : v > hi ? hi : v;
     }
 
-    function onScroll() {
-      const currentScrollY = window.scrollY;
-      const rawDelta = currentScrollY - lastScrollY;
-      lastScrollY = currentScrollY;
-
-      // Inject scroll velocity impulse
-      targetScrollVel += clamp(rawDelta * 0.45, -35, 35);
-
-      // When scrolled past header, activate floating pop elevation
-      targetPopElevate = currentScrollY > 40 ? 1 : 0;
-    }
-
     function composeTransforms() {
-      // 1. Gentle stable levitation at exact position (no vertical scroll drift)
-      time += 0.024;
-      const ambientFloatY = Math.sin(time) * 2.0;
-      const ambientRotZ = Math.cos(time * 0.6) * 0.4;
-      const ambientRotX = Math.sin(time * 0.5) * 0.3;
+      // 1. Continuous Zero-G Floating Levitation at its sticky spot
+      time += 0.026;
+      const ambientFloatY = Math.sin(time) * 3.6;
+      const ambientRotZ = Math.cos(time * 0.7) * 0.6;
+      const ambientRotX = Math.sin(time * 0.6) * 0.4;
 
-      // 2. Crisp 3D Pop-up when active
-      const popZ = clamp(scrollPopElevate * 18 + Math.abs(curScrollVel) * 0.6, 0, 28);
-      const popScale = 1.0 + clamp(scrollPopElevate * 0.018 + Math.abs(curScrollVel) * 0.001, 0, 0.035);
+      // 2. Drag Banking & Displacement
+      const dragBankZ = dragCurX * 0.24;
+      const dragBankX = dragCurY * -0.16;
 
-      // 3. Drag Banking & Displacement
-      const dragBankZ = dragCurX * 0.22;
-      const dragBankX = dragCurY * -0.15;
-
-      // 4. Combined Composition (clean and stable)
+      // 3. Combined Composition (clean and stable float in place)
       const totalRotX = curRotX + ambientRotX + dragBankX;
       const totalRotY = curRotY;
       const totalRotZ = ambientRotZ + dragBankZ;
@@ -96,27 +72,25 @@ export function FloatingPhotoCard() {
       const totalTransY = dragCurY + ambientFloatY;
 
       const rotStr = `rotateX(${totalRotX.toFixed(2)}deg) rotateY(${totalRotY.toFixed(2)}deg) rotateZ(${totalRotZ.toFixed(2)}deg)`;
-      const transStr = `translate3d(${totalTransX.toFixed(2)}px, ${totalTransY.toFixed(2)}px, ${popZ.toFixed(1)}px) scale(${popScale.toFixed(4)})`;
+      const transStr = `translate3d(${totalTransX.toFixed(2)}px, ${totalTransY.toFixed(2)}px, 0)`;
       card!.style.transform = `${transStr} ${rotStr}`;
 
-      // 5. Specular Glare Movement
+      // 4. Specular Glare Movement
       if (sheen) {
         sheen.style.background = `radial-gradient(circle 340px at ${localMouseX}px ${localMouseY}px, rgba(138, 160, 255, 0.16), transparent 70%)`;
       }
 
-      // 6. Breathing & Reactive Pop Underglow
+      // 5. Breathing Underglow Aura
       if (glow) {
-        const glowScale = 1.0 + Math.sin(time * 1.2) * 0.04 + (dragging ? 0.14 : 0) + (popZ / 120);
-        const glowOpacity = 0.30 + (dragging ? 0.25 : 0) + (popZ / 90);
+        const glowScale = 1.0 + Math.sin(time * 1.4) * 0.05 + (dragging ? 0.14 : 0);
         glow.style.transform = `translate3d(${totalTransX.toFixed(2)}px, ${(totalTransY + 14).toFixed(2)}px, -40px) scale(${glowScale.toFixed(3)})`;
-        glow.style.opacity = `${clamp(glowOpacity, 0.2, 0.75).toFixed(2)}`;
+        glow.style.opacity = `${(0.32 + (dragging ? 0.25 : 0)).toFixed(2)}`;
       }
 
-      // 7. Dynamic Elevation Shadow
+      // 6. Dynamic Elevation Shadow
       const shadowX = (-totalRotY * 2.2 + dragCurX * 0.2).toFixed(1);
-      const shadowY = (totalRotX * 2.2 + 12 + popZ * 0.35 + Math.abs(dragCurY) * 0.3).toFixed(1);
-      const shadowBlur = (28 + popZ * 0.6).toFixed(1);
-      card!.style.boxShadow = `${shadowX}px ${shadowY}px ${shadowBlur}px var(--hairline-strong)`;
+      const shadowY = (totalRotX * 2.2 + 12 + Math.abs(dragCurY) * 0.3).toFixed(1);
+      card!.style.boxShadow = `${shadowX}px ${shadowY}px 32px var(--hairline-strong)`;
     }
 
     function frame() {
@@ -129,11 +103,6 @@ export function FloatingPhotoCard() {
         dragCurX += (dragTargetX - dragCurX) * 0.14;
         dragCurY += (dragTargetY - dragCurY) * 0.14;
       }
-
-      // (c) Scroll momentum lerp & decay
-      curScrollVel += (targetScrollVel - curScrollVel) * 0.14;
-      targetScrollVel *= 0.86;
-      scrollPopElevate += (targetPopElevate - scrollPopElevate) * 0.08;
 
       composeTransforms();
 
@@ -216,7 +185,6 @@ export function FloatingPhotoCard() {
       }
     }
 
-    window.addEventListener("scroll", onScroll, { passive: true });
     window.addEventListener("pointermove", onPointerMove, { passive: true });
     window.addEventListener("pointerdown", onPointerDown);
     window.addEventListener("pointerup", onPointerUp);
@@ -225,7 +193,6 @@ export function FloatingPhotoCard() {
     kick();
 
     return () => {
-      window.removeEventListener("scroll", onScroll);
       window.removeEventListener("pointermove", onPointerMove);
       window.removeEventListener("pointerdown", onPointerDown);
       window.removeEventListener("pointerup", onPointerUp);

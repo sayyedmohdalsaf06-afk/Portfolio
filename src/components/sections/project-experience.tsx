@@ -153,14 +153,9 @@ export function ProjectExperience() {
 
     let localMouseX = 350;
     let localMouseY = 200;
-    let time = 0;
 
-    // Scroll-driven dynamic pop-up & momentum physics
-    let lastScrollY = window.scrollY;
-    let targetScrollVel = 0;
-    let curScrollVel = 0;
-    let scrollPopElevate = 0;
-    let targetPopElevate = 0;
+    let targetArrivalProgress = 0;
+    let curArrivalProgress = 0;
 
     let rafId: number | null = null;
 
@@ -169,38 +164,44 @@ export function ProjectExperience() {
     }
 
     function onScroll() {
-      const currentScrollY = window.scrollY;
-      const rawDelta = currentScrollY - lastScrollY;
-      lastScrollY = currentScrollY;
-
-      // Inject scroll velocity impulse
-      targetScrollVel += clamp(rawDelta * 0.4, -30, 30);
-
-      // Check if projects card is in viewport for pop elevation
       const rect = container!.getBoundingClientRect();
-      const inView = rect.top < window.innerHeight * 0.85 && rect.bottom > window.innerHeight * 0.15;
-      targetPopElevate = inView ? 1 : 0;
+      const windowHeight = window.innerHeight;
+
+      // Pop-up triggers as project section scrolls into view from below
+      const startY = windowHeight * 0.96;
+      const endY = windowHeight * 0.32;
+      const rawProgress = (startY - rect.top) / (startY - endY);
+      targetArrivalProgress = clamp(rawProgress, 0, 1);
+      kick();
     }
 
     function composeTransforms() {
-      // 1. Crisp 3D Pop-Up Elevation when in view or scrolling
-      const popZ = clamp(scrollPopElevate * 22 + Math.abs(curScrollVel) * 0.5, 0, 28);
-      const popScale = 1.0 + clamp(scrollPopElevate * 0.016 + Math.abs(curScrollVel) * 0.0008, 0, 0.028);
+      // 1. Dramatic 3D Pop-Up Animation on Scroll Down
+      const t = curArrivalProgress;
+      const popProgress = 1 - Math.pow(1 - t, 2.8); // Smooth fluid power ease-out
 
-      // 2. Drag Banking & Displacement (springs back to static position)
+      const popSlideY = (1 - popProgress) * 44; // Lifts up 44px
+      const popSlideZ = (1 - popProgress) * -110; // Enters from -110px depth in Z-space
+      const popPitchX = (1 - popProgress) * 9; // Pitches flat from 9deg
+      const popScale = 0.88 + popProgress * 0.12; // Scales up from 0.88 to 1.0
+      const popOpacity = 0.35 + popProgress * 0.65; // Fades in to full opacity
+
+      // 2. Drag Banking & Displacement
       const dragBankZ = dragCurX * 0.20;
       const dragBankX = dragCurY * -0.14;
 
-      // 3. Combined Composition (Static layout anchor)
-      const totalRotX = curRotX + dragBankX;
+      // 3. Combined Composition
+      const totalRotX = curRotX + popPitchX + dragBankX;
       const totalRotY = curRotY;
       const totalRotZ = dragBankZ;
       const totalTransX = dragCurX;
-      const totalTransY = dragCurY;
+      const totalTransY = dragCurY + popSlideY;
+      const totalTransZ = popSlideZ;
 
-      const rotStr = `rotateX(${totalRotX.toFixed(2)}deg) rotateY(${totalRotY.toFixed(2)}deg) rotateZ(${totalRotZ.toFixed(2)}deg)`;
-      const transStr = `translate3d(${totalTransX.toFixed(2)}px, ${totalTransY.toFixed(2)}px, ${popZ.toFixed(1)}px) scale(${popScale.toFixed(4)})`;
+      const rotStr = `rotateX(${totalRotX.toFixed(2)}deg) rotateY(${totalRotY.toFixed(2)}deg) rotateZ(${totalRotZ.toFixed(2)}deg) scale(${popScale.toFixed(4)})`;
+      const transStr = `translate3d(${totalTransX.toFixed(2)}px, ${totalTransY.toFixed(2)}px, ${totalTransZ.toFixed(2)}px)`;
       card!.style.transform = `${transStr} ${rotStr}`;
+      card!.style.opacity = `${popOpacity.toFixed(2)}`;
 
       // 4. Specular Glare Movement
       if (sheen) {
@@ -209,34 +210,32 @@ export function ProjectExperience() {
 
       // 5. Breathing & Reactive Pop Underglow
       if (glow) {
-        const glowScale = 1.0 + (dragging ? 0.12 : 0) + (popZ / 120);
-        const glowOpacity = 0.24 + (dragging ? 0.22 : 0) + (popZ / 80);
+        const glowScale = 0.82 + popProgress * 0.22 + (dragging ? 0.12 : 0);
+        const glowOpacity = popProgress * 0.38 + (dragging ? 0.22 : 0);
         glow.style.transform = `translate3d(${totalTransX.toFixed(2)}px, ${(totalTransY + 14).toFixed(2)}px, -40px) scale(${glowScale.toFixed(3)})`;
-        glow.style.opacity = `${clamp(glowOpacity, 0.15, 0.70).toFixed(2)}`;
+        glow.style.opacity = `${glowOpacity.toFixed(2)}`;
       }
 
       // 6. Dynamic Elevation Shadow Expansion
       const shadowX = (-totalRotY * 2.2 + dragCurX * 0.2).toFixed(1);
-      const shadowY = (totalRotX * 2.2 + 12 + popZ * 0.4 + Math.abs(dragCurY) * 0.3).toFixed(1);
-      const shadowBlur = (24 + popZ * 0.6).toFixed(1);
+      const shadowY = (totalRotX * 2.2 + 10 + popProgress * 8 + Math.abs(dragCurY) * 0.3).toFixed(1);
+      const shadowBlur = (16 + popProgress * 24).toFixed(1);
       card!.style.boxShadow = `${shadowX}px ${shadowY}px ${shadowBlur}px var(--hairline-strong)`;
     }
 
     function frame() {
-      // (a) Pointer 3D tilt easing
+      // (a) Silky smooth pop-up progress lerp
+      curArrivalProgress += (targetArrivalProgress - curArrivalProgress) * 0.08;
+
+      // (b) Pointer 3D tilt easing
       curRotX += (targetRotX - curRotX) * 0.10;
       curRotY += (targetRotY - curRotY) * 0.10;
 
-      // (b) Elastic drag spring settle
+      // (c) Elastic drag spring settle
       if (!dragging) {
         dragCurX += (dragTargetX - dragCurX) * 0.14;
         dragCurY += (dragTargetY - dragCurY) * 0.14;
       }
-
-      // (c) Scroll momentum lerp & decay
-      curScrollVel += (targetScrollVel - curScrollVel) * 0.14;
-      targetScrollVel *= 0.86;
-      scrollPopElevate += (targetPopElevate - scrollPopElevate) * 0.08;
 
       composeTransforms();
 
