@@ -349,28 +349,28 @@ export function ProjectExperience() {
     >
       {/* Section Header */}
       <div className="mb-8">
-        <div className="flex items-center gap-2.5 font-annotation text-xs uppercase tracking-[0.16em] text-[#9ca3af] mb-2.5">
+        <div className="flex items-center gap-2.5 font-annotation text-xs uppercase tracking-[0.16em] text-[var(--muted)] mb-2.5">
           <span>01 · Primary Build</span>
           <span aria-hidden="true" className="h-2.5 w-px bg-[var(--hairline-strong)]" />
-          <span className="text-[#22d3ee] font-medium">In Active Build · Phase 1 & 2</span>
+          <span className="text-[var(--accent)] font-medium">In Active Build · Phase 1 & 2</span>
         </div>
 
         <div className="flex flex-wrap items-baseline gap-3">
           <h2
             id="project-title"
             data-cursor="scan"
-            className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-[-0.03em] text-[#e5e7eb] select-none"
+            className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-[-0.03em] text-[var(--text)] select-none"
           >
             CAMPLX
           </h2>
-          <span className="font-annotation text-xs sm:text-sm text-[#9ca3af] uppercase tracking-wider">
+          <span className="font-annotation text-xs sm:text-sm text-[var(--muted)] uppercase tracking-wider">
             Campus + Exchange + Community
           </span>
         </div>
 
         <p
           data-cursor="scan"
-          className="mt-3 text-sm sm:text-base text-[#9ca3af] max-w-xl font-normal leading-relaxed"
+          className="mt-3 text-sm sm:text-base text-[var(--muted)] max-w-xl font-normal leading-relaxed"
         >
           &quot;Trade smarter on campus.&quot; A verified campus-first marketplace and community platform for students to buy, sell, exchange, donate, and request items within their college community.
         </p>

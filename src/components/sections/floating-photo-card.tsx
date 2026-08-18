@@ -247,7 +247,7 @@ export function FloatingPhotoCard() {
           >
             <div className="flex items-center gap-1.5">
               <span className="h-1.5 w-1.5 rounded-full bg-[#22d3ee] shadow-[0_0_8px_#22d3ee]" aria-hidden="true" />
-              <span className="font-semibold text-[#e5e7eb] tracking-wider">DOSSIER // SPEC-01</span>
+              <span className="font-semibold text-[#e5e7eb] tracking-wider">PROFILE // SPEC-01</span>
             </div>
             <span className="text-[#22d3ee] font-semibold tracking-wider">ACTIVE BUILDER</span>
           </div>

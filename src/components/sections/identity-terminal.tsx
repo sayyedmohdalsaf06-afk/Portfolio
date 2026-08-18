@@ -251,14 +251,14 @@ export function IdentityTerminal() {
       className="relative py-6 border-t border-[var(--hairline)]"
     >
       <div className="mb-3 flex items-center justify-between">
-        <div className="flex items-center gap-2 font-annotation text-xs uppercase tracking-[0.16em] text-[#9ca3af]">
-          <span className="inline-block h-1.5 w-1.5 rounded-xs bg-[#22d3ee] shadow-[0_0_6px_#22d3ee]" aria-hidden="true" />
-          <h2 id="terminal-heading" className="font-normal text-[#9ca3af]">
+        <div className="flex items-center gap-2 font-annotation text-xs uppercase tracking-[0.16em] text-[var(--muted)]">
+          <span className="inline-block h-1.5 w-1.5 rounded-xs bg-[var(--accent)] shadow-[0_0_6px_var(--accent)]" aria-hidden="true" />
+          <h2 id="terminal-heading" className="font-normal text-[var(--muted)]">
             Developer Workstation
           </h2>
         </div>
 
-        <span className="font-annotation text-[10px] text-[#9ca3af] hidden sm:inline">
+        <span className="font-annotation text-[10px] text-[var(--muted)] hidden sm:inline">
           INTERACTIVE READOUT · DRAGGABLE
         </span>
       </div>

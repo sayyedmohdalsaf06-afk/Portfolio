@@ -49,12 +49,12 @@ export function TopNavigation() {
       <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 py-3 flex items-center justify-between">
         {/* Left: System Designation */}
         <div className="flex items-center gap-3 font-annotation text-xs">
-          <span className="inline-block h-2 w-2 rounded-full bg-[#22d3ee] animate-pulse shadow-[0_0_8px_#22d3ee]" aria-hidden="true" />
-          <span className="text-[#e5e7eb] font-semibold tracking-wider uppercase">
+          <span className="inline-block h-2 w-2 rounded-full bg-[var(--accent)] animate-pulse shadow-[0_0_8px_var(--accent)]" aria-hidden="true" />
+          <span className="text-[var(--text)] font-semibold tracking-wider uppercase">
             PORTFOLIO // V2
           </span>
           <span className="text-[var(--hairline-strong)] hidden sm:inline">|</span>
-          <span className="text-[#9ca3af] hidden sm:inline text-[11px]">
+          <span className="text-[var(--muted)] hidden sm:inline text-[11px]">
             BUILDER WORKSPACE
           </span>
         </div>
@@ -67,8 +67,8 @@ export function TopNavigation() {
             onClick={() => scrollTo("hero")}
             className={`px-3 py-1 rounded-xs transition-all ${
               activeSection === "overview"
-                ? "bg-[#0d9488]/20 border border-[#0d9488]/40 text-[#22d3ee] font-semibold"
-                : "text-[#9ca3af] hover:text-[#e5e7eb]"
+                ? "bg-[var(--accent)]/[0.12] border border-[var(--accent)]/40 text-[var(--accent)] font-semibold"
+                : "text-[var(--muted)] hover:text-[var(--text)]"
             }`}
           >
             01 · OVERVIEW
@@ -79,8 +79,8 @@ export function TopNavigation() {
             onClick={() => scrollTo("whoami")}
             className={`px-3 py-1 rounded-xs transition-all ${
               activeSection === "whoami"
-                ? "bg-[#0d9488]/20 border border-[#0d9488]/40 text-[#22d3ee] font-semibold"
-                : "text-[#9ca3af] hover:text-[#e5e7eb]"
+                ? "bg-[var(--accent)]/[0.12] border border-[var(--accent)]/40 text-[var(--accent)] font-semibold"
+                : "text-[var(--muted)] hover:text-[var(--text)]"
             }`}
           >
             02 · WORKSTATION
@@ -91,8 +91,8 @@ export function TopNavigation() {
             onClick={() => scrollTo("project-experience")}
             className={`px-3 py-1 rounded-xs transition-all ${
               activeSection === "campusswap"
-                ? "bg-[#0d9488]/20 border border-[#0d9488]/40 text-[#22d3ee] font-semibold"
-                : "text-[#9ca3af] hover:text-[#e5e7eb]"
+                ? "bg-[var(--accent)]/[0.12] border border-[var(--accent)]/40 text-[var(--accent)] font-semibold"
+                : "text-[var(--muted)] hover:text-[var(--text)]"
             }`}
           >
             03 · CAMPLX
@@ -106,7 +106,7 @@ export function TopNavigation() {
             target="_blank"
             rel="noopener noreferrer"
             data-cursor="clickable"
-            className="font-annotation text-xs text-[#22d3ee] hover:underline inline-flex items-center gap-1 font-medium uppercase"
+            className="font-annotation text-xs text-[var(--accent)] hover:underline inline-flex items-center gap-1 font-medium uppercase"
           >
             <span>GITHUB</span>
             <span aria-hidden="true">↗</span>
