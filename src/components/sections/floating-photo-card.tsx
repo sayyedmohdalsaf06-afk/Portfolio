@@ -76,23 +76,23 @@ export function FloatingPhotoCard() {
       const transStr = `translate3d(${totalTransX.toFixed(2)}px, ${totalTransY.toFixed(2)}px, 0)`;
       card!.style.transform = `${transStr} ${rotStr}`;
 
-      // 4. Specular Glare Movement with Prismatic Violet & Cyan Highlights
+      // 4. Studio Lens Reflection & Specular Glare
       if (sheen) {
-        sheen.style.background = `radial-gradient(circle 380px at ${localMouseX}px ${localMouseY}px, rgba(167, 139, 250, 0.28) 0%, rgba(6, 182, 212, 0.14) 48%, transparent 72%)`;
+        sheen.style.background = `radial-gradient(circle 380px at ${localMouseX}px ${localMouseY}px, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.02) 40%, transparent 65%)`;
       }
 
-      // 5. Breathing Aurora Underglow Aura
+      // 5. Studio Ambient Underglow
       if (glow) {
-        const glowScale = 1.0 + Math.sin(time * 1.6) * 0.12 + (dragging ? 0.20 : 0);
-        const glowOpacity = 0.44 + Math.sin(time * 1.6) * 0.12 + (dragging ? 0.30 : 0);
+        const glowScale = 1.0 + Math.sin(time * 1.6) * 0.06 + (dragging ? 0.14 : 0);
+        const glowOpacity = 0.28 + Math.sin(time * 1.6) * 0.06 + (dragging ? 0.20 : 0);
         glow.style.transform = `translate3d(${totalTransX.toFixed(2)}px, ${(totalTransY + 16).toFixed(2)}px, -40px) scale(${glowScale.toFixed(3)})`;
         glow.style.opacity = `${glowOpacity.toFixed(2)}`;
       }
 
-      // 6. Dynamic Elevation Shadow
-      const shadowX = (-totalRotY * 2.8 + dragCurX * 0.28).toFixed(1);
-      const shadowY = (totalRotX * 2.8 + 16 + Math.abs(dragCurY) * 0.4).toFixed(1);
-      card!.style.boxShadow = `${shadowX}px ${shadowY}px 40px var(--hairline-strong)`;
+      // 6. Precision Studio Drop Shadow
+      const shadowX = (-totalRotY * 2.2 + dragCurX * 0.2).toFixed(1);
+      const shadowY = (totalRotX * 2.2 + 14 + Math.abs(dragCurY) * 0.35).toFixed(1);
+      card!.style.boxShadow = `${shadowX}px ${shadowY}px 36px rgba(0, 0, 0, 0.55)`;
     }
 
     function frame() {
@@ -133,8 +133,8 @@ export function FloatingPhotoCard() {
         if (!dragging) {
           const nx = (e.clientX - (rect.left + rect.width / 2)) / (rect.width / 2);
           const ny = (e.clientY - (rect.top + rect.height / 2)) / (rect.height / 2);
-          targetRotX = -ny * 8.5;
-          targetRotY = nx * 8.5;
+          targetRotX = -ny * 7.5;
+          targetRotY = nx * 7.5;
         }
       } else if (!dragging) {
         targetRotX = 0;
@@ -211,33 +211,33 @@ export function FloatingPhotoCard() {
     >
       {/* 3D Perspective Stage */}
       <div className="relative w-full [perspective:1200px]">
-        {/* Breathing Aurora Violet & Cyan Underglow Aura */}
+        {/* Studio Ambient Underglow */}
         <div
           ref={glowRef}
           aria-hidden="true"
-          className="absolute inset-x-4 -inset-y-3 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(139,92,246,0.65)_0%,rgba(6,182,212,0.28)_45%,transparent_72%)] opacity-35 blur-2xl pointer-events-none -z-10 transition-opacity duration-300"
+          className="absolute inset-x-4 -inset-y-3 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.06)_0%,rgba(245,158,11,0.08)_40%,transparent_70%)] opacity-30 blur-2xl pointer-events-none -z-10 transition-opacity duration-300"
         />
 
         {/* 3D Physical Card Chassis */}
         <div
           ref={cardRef}
           data-cursor="drag"
-          className="relative w-full rounded-sm border border-[var(--hairline-strong)] bg-[var(--surface-raised)] will-change-transform select-none shadow-xl overflow-hidden p-5 flex flex-col justify-between transition-shadow duration-300"
+          className="relative w-full rounded-sm border border-[var(--hairline-strong)] bg-[var(--surface-raised)] will-change-transform select-none shadow-2xl overflow-hidden p-5 flex flex-col justify-between transition-shadow duration-300"
           style={{
             transformStyle: "preserve-3d",
           }}
         >
-          {/* Specular Holographic Glare Layer */}
+          {/* Specular Studio Lens Reflection */}
           <div
             ref={sheenRef}
             aria-hidden="true"
             className="absolute inset-0 pointer-events-none z-30 transition-opacity duration-300 opacity-90"
           />
 
-          {/* Animated Iridescent Edge Shimmer */}
+          {/* Precision Top Edge Highlight */}
           <div
             aria-hidden="true"
-            className="absolute -inset-[1px] rounded-sm pointer-events-none z-20 border border-[var(--accent-ink)]/35 opacity-80 [mask-image:radial-gradient(circle_at_top_right,black,transparent_75%)]"
+            className="absolute -inset-[1px] rounded-sm pointer-events-none z-20 border border-[var(--hairline-strong)] opacity-60 [mask-image:radial-gradient(circle_at_top_right,black,transparent_75%)]"
           />
 
           {/* Top Meta Bar */}
@@ -246,10 +246,10 @@ export function FloatingPhotoCard() {
             style={{ transform: "translateZ(8px)" }}
           >
             <div className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent-ink)] animate-pulse shadow-[0_0_8px_var(--accent-glow)]" aria-hidden="true" />
+              <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)] shadow-[0_0_6px_var(--accent)]" aria-hidden="true" />
               <span className="font-semibold text-[var(--text)] tracking-wider">DOSSIER // SPEC-01</span>
             </div>
-            <span className="text-[var(--accent-ink)] font-semibold">ACTIVE BUILDER</span>
+            <span className="text-[var(--accent-ink)] font-semibold tracking-wider">ACTIVE BUILDER</span>
           </div>
 
           {/* Builder Portrait Aperture */}
@@ -260,15 +260,15 @@ export function FloatingPhotoCard() {
             title="Builder Character Visual"
           >
             {/* Technical Corner Crosshairs */}
-            <span className="absolute top-1.5 left-1.5 text-[9px] font-mono text-[var(--accent-ink)] select-none z-10">┌</span>
-            <span className="absolute top-1.5 right-1.5 text-[9px] font-mono text-[var(--accent-ink)] select-none z-10">┐</span>
-            <span className="absolute bottom-1.5 left-1.5 text-[9px] font-mono text-[var(--accent-ink)] select-none z-10">└</span>
-            <span className="absolute bottom-1.5 right-1.5 text-[9px] font-mono text-[var(--accent-ink)] select-none z-10">┘</span>
+            <span className="absolute top-1.5 left-1.5 text-[9px] font-mono text-[var(--muted)] select-none z-10">┌</span>
+            <span className="absolute top-1.5 right-1.5 text-[9px] font-mono text-[var(--muted)] select-none z-10">┐</span>
+            <span className="absolute bottom-1.5 left-1.5 text-[9px] font-mono text-[var(--muted)] select-none z-10">└</span>
+            <span className="absolute bottom-1.5 right-1.5 text-[9px] font-mono text-[var(--muted)] select-none z-10">┘</span>
 
-            {/* Scanline Radar Sweep */}
+            {/* Subtle Studio Scanline Sweep */}
             <div
               aria-hidden="true"
-              className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-transparent via-[var(--accent-ink)]/25 to-transparent pointer-events-none z-20 animate-[scanline_4s_ease-in-out_infinite]"
+              className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-transparent via-white/[0.04] to-transparent pointer-events-none z-20 animate-[scanline_5s_ease-in-out_infinite]"
             />
 
             {!imgError ? (

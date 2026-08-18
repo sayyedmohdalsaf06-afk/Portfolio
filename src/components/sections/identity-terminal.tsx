@@ -108,25 +108,25 @@ export function IdentityTerminal() {
       card!.style.transform = `${transStr} ${rotStr}`;
       card!.style.opacity = `${popOpacity.toFixed(2)}`;
 
-      // 4. Dynamic Holographic Glare Layer with Prismatic Violet & Cyan
+      // 4. Studio Lens Reflection & Glare
       if (sheen) {
         const glareY = localMouseY + (1 - clamp(popProgress, 0, 1)) * 120;
-        sheen.style.background = `radial-gradient(circle 460px at ${localMouseX}px ${glareY.toFixed(1)}px, rgba(167, 139, 250, 0.30) 0%, rgba(6, 182, 212, 0.14) 48%, transparent 72%)`;
+        sheen.style.background = `radial-gradient(circle 460px at ${localMouseX}px ${glareY.toFixed(1)}px, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.01) 45%, transparent 65%)`;
       }
 
-      // 5. Breathing & Radiant Aurora Pop Underglow Aura
+      // 5. Studio Ambient Underglow
       if (glow) {
         const glowScale = 0.70 + popProgress * 0.42 + (dragging ? 0.20 : 0);
-        const glowOpacity = clamp(popProgress * 0.58 + (dragging ? 0.30 : 0), 0, 0.90);
+        const glowOpacity = clamp(popProgress * 0.40 + (dragging ? 0.20 : 0), 0, 0.75);
         glow.style.transform = `translate3d(${totalTransX.toFixed(2)}px, ${(totalTransY + 16).toFixed(2)}px, -40px) scale(${glowScale.toFixed(3)})`;
         glow.style.opacity = `${glowOpacity.toFixed(2)}`;
       }
 
-      // 6. Dynamic Elevation Shadow
-      const shadowX = (-totalRotY * 2.8 + dragCurX * 0.28).toFixed(1);
-      const shadowY = (totalRotX * 2.8 + 14 + popProgress * 16 + Math.abs(dragCurY) * 0.4).toFixed(1);
-      const shadowBlur = (16 + popProgress * 36).toFixed(1);
-      card!.style.boxShadow = `${shadowX}px ${shadowY}px ${shadowBlur}px var(--hairline-strong)`;
+      // 6. Precision Studio Drop Shadow
+      const shadowX = (-totalRotY * 2.4 + dragCurX * 0.22).toFixed(1);
+      const shadowY = (totalRotX * 2.4 + 14 + popProgress * 16 + Math.abs(dragCurY) * 0.35).toFixed(1);
+      const shadowBlur = (16 + popProgress * 32).toFixed(1);
+      card!.style.boxShadow = `${shadowX}px ${shadowY}px ${shadowBlur}px rgba(0, 0, 0, 0.55)`;
     }
 
     function frame() {
@@ -252,7 +252,7 @@ export function IdentityTerminal() {
     >
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2 font-annotation text-xs uppercase tracking-[0.16em] text-[var(--muted)]">
-          <span className="inline-block h-1.5 w-1.5 rounded-xs bg-[var(--accent-ink)]" aria-hidden="true" />
+          <span className="inline-block h-1.5 w-1.5 rounded-xs bg-[var(--accent)]" aria-hidden="true" />
           <h2 id="terminal-heading" className="font-normal text-[var(--muted)]">
             Developer Workstation
           </h2>
@@ -265,11 +265,11 @@ export function IdentityTerminal() {
 
       {/* 3D Perspective Stage Container */}
       <div className="relative w-full [perspective:1200px]">
-        {/* Ambient Aurora Underglow Aura */}
+        {/* Ambient Studio Underglow Aura */}
         <div
           ref={glowRef}
           aria-hidden="true"
-          className="absolute inset-x-6 -inset-y-4 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.60)_0%,rgba(139,92,246,0.30)_40%,rgba(6,182,212,0.15)_65%,transparent_75%)] opacity-30 blur-2xl pointer-events-none -z-10 transition-opacity duration-300"
+          className="absolute inset-x-6 -inset-y-4 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.05)_0%,rgba(245,158,11,0.06)_45%,transparent_75%)] opacity-25 blur-2xl pointer-events-none -z-10 transition-opacity duration-300"
         />
 
         {/* Modern Developer Terminal Artifact */}

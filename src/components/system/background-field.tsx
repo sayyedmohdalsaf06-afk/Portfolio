@@ -250,12 +250,10 @@ export function BackgroundField() {
             const lineAlpha = lineProximity * Math.min(p1.alpha, p2.alpha) * 0.45 * mouseBoost;
 
             if (lineAlpha > 0.02) {
-              ctx.lineWidth = p1.distToMouse < 150 ? 1.1 : 0.7;
+              ctx.lineWidth = p1.distToMouse < 150 ? 1.0 : 0.6;
               ctx.strokeStyle = isDark
-                ? (i % 2 === 0
-                    ? `rgba(167, 139, 250, ${Math.min(0.92, lineAlpha)})`
-                    : `rgba(6, 182, 212, ${Math.min(0.85, lineAlpha)})`)
-                : `rgba(79, 70, 229, ${Math.min(0.80, lineAlpha)})`;
+                ? `rgba(244, 244, 246, ${Math.min(0.25, lineAlpha * 0.28)})`
+                : `rgba(20, 21, 24, ${Math.min(0.20, lineAlpha * 0.22)})`;
               ctx.beginPath();
               ctx.moveTo(p1.px, p1.py);
               ctx.lineTo(p2.px, p2.py);
@@ -281,17 +279,17 @@ export function BackgroundField() {
           if (pdist < 190) {
             const pulseX = pt1.px + (pt2.px - pt1.px) * pulse.progress;
             const pulseY = pt1.py + (pt2.py - pt1.py) * pulse.progress;
-            const pulseSize = 2.4 * ((pt1.scale + pt2.scale) / 2);
+            const pulseSize = 2.0 * ((pt1.scale + pt2.scale) / 2);
 
-            ctx.fillStyle = isDark ? "rgba(192, 132, 252, 0.98)" : "rgba(79, 70, 229, 0.95)";
+            ctx.fillStyle = isDark ? "rgba(244, 244, 246, 0.85)" : "rgba(20, 21, 24, 0.75)";
             ctx.beginPath();
             ctx.arc(pulseX, pulseY, pulseSize, 0, Math.PI * 2);
             ctx.fill();
 
-            // Luminous pulse aura
-            ctx.fillStyle = isDark ? "rgba(6, 182, 212, 0.45)" : "rgba(79, 70, 229, 0.35)";
+            // Studio subtle pulse aura
+            ctx.fillStyle = isDark ? "rgba(245, 158, 11, 0.25)" : "rgba(217, 119, 6, 0.20)";
             ctx.beginPath();
-            ctx.arc(pulseX, pulseY, pulseSize * 2.8, 0, Math.PI * 2);
+            ctx.arc(pulseX, pulseY, pulseSize * 2.2, 0, Math.PI * 2);
             ctx.fill();
           }
         }
@@ -301,19 +299,19 @@ export function BackgroundField() {
       for (const item of projected) {
         const { px, py, scale, p, alpha, distToMouse } = item;
         const isNearby = distToMouse < 170;
-        const ptSize = p.size * scale * (isNearby ? 1.45 : 1.0);
+        const ptSize = p.size * scale * (isNearby ? 1.35 : 1.0);
 
         if (p.hasCross) {
           // Technical coordinate cross (+)
-          const arm = (ptSize + 4.5) * scale;
+          const arm = (ptSize + 3.5) * scale;
           ctx.strokeStyle = isDark
             ? isNearby
-              ? `rgba(192, 132, 252, ${alpha})`
-              : `rgba(237, 233, 224, ${alpha})`
+              ? `rgba(245, 158, 11, ${alpha * 0.9})`
+              : `rgba(244, 244, 246, ${alpha * 0.5})`
             : isNearby
-            ? `rgba(79, 70, 229, ${alpha})`
-            : `rgba(22, 22, 26, ${alpha})`;
-          ctx.lineWidth = isNearby ? 1.4 : 0.9;
+            ? `rgba(217, 119, 6, ${alpha * 0.8})`
+            : `rgba(20, 21, 24, ${alpha * 0.4})`;
+          ctx.lineWidth = isNearby ? 1.2 : 0.8;
           ctx.beginPath();
           ctx.moveTo(px - arm, py);
           ctx.lineTo(px + arm, py);
@@ -324,23 +322,23 @@ export function BackgroundField() {
           // Luminous node core
           ctx.fillStyle = isDark
             ? isNearby
-              ? `rgba(192, 132, 252, ${alpha})`
-              : `rgba(237, 233, 224, ${alpha})`
+              ? `rgba(245, 158, 11, ${alpha * 0.95})`
+              : `rgba(244, 244, 246, ${alpha * 0.55})`
             : isNearby
-            ? `rgba(79, 70, 229, ${alpha})`
-            : `rgba(22, 22, 26, ${alpha})`;
+            ? `rgba(217, 119, 6, ${alpha * 0.85})`
+            : `rgba(20, 21, 24, ${alpha * 0.45})`;
 
           ctx.beginPath();
-          ctx.arc(px, py, Math.max(1.3, ptSize), 0, Math.PI * 2);
+          ctx.arc(px, py, Math.max(1.2, ptSize), 0, Math.PI * 2);
           ctx.fill();
 
           // Rotating technical radar halo ring
           if (p.hasRing || isNearby) {
-            const ringRadius = Math.max(4.0, ptSize + 5.0);
+            const ringRadius = Math.max(4.0, ptSize + 4.5);
             ctx.strokeStyle = isDark
-              ? `rgba(167, 139, 250, ${alpha * 0.70})`
-              : `rgba(79, 70, 229, ${alpha * 0.55})`;
-            ctx.lineWidth = 0.9;
+              ? `rgba(244, 244, 246, ${alpha * 0.25})`
+              : `rgba(20, 21, 24, ${alpha * 0.20})`;
+            ctx.lineWidth = 0.8;
             ctx.beginPath();
             ctx.arc(px, py, ringRadius, 0, Math.PI * 2);
             ctx.stroke();
@@ -349,9 +347,9 @@ export function BackgroundField() {
             const tickAngle = time * 1.3 + p.pulsePhase;
             const tx = px + Math.cos(tickAngle) * ringRadius;
             const ty = py + Math.sin(tickAngle) * ringRadius;
-            ctx.fillStyle = isDark ? `rgba(6, 182, 212, ${alpha})` : `rgba(79, 70, 229, ${alpha})`;
+            ctx.fillStyle = isDark ? `rgba(245, 158, 11, ${alpha * 0.8})` : `rgba(217, 119, 6, ${alpha * 0.7})`;
             ctx.beginPath();
-            ctx.arc(tx, ty, 1.2, 0, Math.PI * 2);
+            ctx.arc(tx, ty, 1.0, 0, Math.PI * 2);
             ctx.fill();
           }
         }
