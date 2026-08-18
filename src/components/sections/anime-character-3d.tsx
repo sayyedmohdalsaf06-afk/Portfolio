@@ -30,11 +30,11 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
     if (!canvas) return;
 
     // 1. Scene & Camera Setup
-    const width = 160;
-    const height = 160;
+    const width = 200;
+    const height = 200;
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
-    camera.position.set(0, 0.2, 3.2);
+    camera.position.set(0, 0.08, 2.75);
 
     const renderer = new THREE.WebGLRenderer({
       canvas,
@@ -471,7 +471,7 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
       </div>
 
       {/* Real-time WebGL 3D Animated Character Canvas */}
-      <div className="relative order-1 sm:order-2 shrink-0 h-16 w-16 sm:h-20 sm:w-20 flex items-center justify-center">
+      <div className="relative order-1 sm:order-2 shrink-0 h-20 w-20 sm:h-24 sm:w-24 flex items-center justify-center">
         {/* Luminous Cyan/Teal Halo */}
         <div
           aria-hidden="true"
@@ -481,9 +481,9 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
         {/* 3D WebGL Canvas */}
         <canvas
           ref={canvasRef}
-          width={160}
-          height={160}
-          className="relative w-full h-full object-contain filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.45)] transition-transform duration-300 group-hover:scale-110"
+          width={200}
+          height={200}
+          className="relative w-full h-full object-contain filter drop-shadow-[0_4px_16px_rgba(0,0,0,0.5)] transition-transform duration-300 group-hover:scale-110"
         />
 
         {/* Small Pointing Hand Indicator Badge */}
