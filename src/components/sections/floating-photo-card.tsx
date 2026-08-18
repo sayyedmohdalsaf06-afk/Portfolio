@@ -76,15 +76,15 @@ export function FloatingPhotoCard() {
       const transStr = `translate3d(${totalTransX.toFixed(2)}px, ${totalTransY.toFixed(2)}px, 0)`;
       card!.style.transform = `${transStr} ${rotStr}`;
 
-      // 4. Studio Lens Reflection & Specular Glare
+      // 4. Specular Teal & Cyan Lens Reflection
       if (sheen) {
-        sheen.style.background = `radial-gradient(circle 380px at ${localMouseX}px ${localMouseY}px, rgba(255, 255, 255, 0.10) 0%, rgba(255, 255, 255, 0.02) 40%, transparent 65%)`;
+        sheen.style.background = `radial-gradient(circle 380px at ${localMouseX}px ${localMouseY}px, rgba(34, 211, 238, 0.16) 0%, rgba(13, 148, 136, 0.04) 50%, transparent 68%)`;
       }
 
-      // 5. Studio Ambient Underglow
+      // 5. Ambient Teal Underglow
       if (glow) {
-        const glowScale = 1.0 + Math.sin(time * 1.6) * 0.06 + (dragging ? 0.14 : 0);
-        const glowOpacity = 0.28 + Math.sin(time * 1.6) * 0.06 + (dragging ? 0.20 : 0);
+        const glowScale = 1.0 + Math.sin(time * 1.6) * 0.08 + (dragging ? 0.16 : 0);
+        const glowOpacity = 0.32 + Math.sin(time * 1.6) * 0.08 + (dragging ? 0.22 : 0);
         glow.style.transform = `translate3d(${totalTransX.toFixed(2)}px, ${(totalTransY + 16).toFixed(2)}px, -40px) scale(${glowScale.toFixed(3)})`;
         glow.style.opacity = `${glowOpacity.toFixed(2)}`;
       }
@@ -92,7 +92,7 @@ export function FloatingPhotoCard() {
       // 6. Precision Studio Drop Shadow
       const shadowX = (-totalRotY * 2.2 + dragCurX * 0.2).toFixed(1);
       const shadowY = (totalRotX * 2.2 + 14 + Math.abs(dragCurY) * 0.35).toFixed(1);
-      card!.style.boxShadow = `${shadowX}px ${shadowY}px 36px rgba(0, 0, 0, 0.55)`;
+      card!.style.boxShadow = `${shadowX}px ${shadowY}px 36px rgba(0, 0, 0, 0.6)`;
     }
 
     function frame() {
@@ -211,18 +211,18 @@ export function FloatingPhotoCard() {
     >
       {/* 3D Perspective Stage */}
       <div className="relative w-full [perspective:1200px]">
-        {/* Studio Ambient Underglow */}
+        {/* Ambient Teal + Cyan Underglow Aura */}
         <div
           ref={glowRef}
           aria-hidden="true"
-          className="absolute inset-x-4 -inset-y-3 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.06)_0%,rgba(245,158,11,0.08)_40%,transparent_70%)] opacity-30 blur-2xl pointer-events-none -z-10 transition-opacity duration-300"
+          className="absolute inset-x-4 -inset-y-3 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(13,148,136,0.40)_0%,rgba(34,211,238,0.20)_45%,transparent_72%)] opacity-35 blur-2xl pointer-events-none -z-10 transition-opacity duration-300"
         />
 
         {/* 3D Physical Card Chassis */}
         <div
           ref={cardRef}
           data-cursor="drag"
-          className="relative w-full rounded-sm border border-[var(--hairline-strong)] bg-[var(--surface-raised)] will-change-transform select-none shadow-2xl overflow-hidden p-5 flex flex-col justify-between transition-shadow duration-300"
+          className="relative w-full rounded-sm border border-[var(--hairline-strong)] bg-[#111827] will-change-transform select-none shadow-2xl overflow-hidden p-5 flex flex-col justify-between transition-shadow duration-300"
           style={{
             transformStyle: "preserve-3d",
           }}
@@ -237,7 +237,7 @@ export function FloatingPhotoCard() {
           {/* Precision Top Edge Highlight */}
           <div
             aria-hidden="true"
-            className="absolute -inset-[1px] rounded-sm pointer-events-none z-20 border border-[var(--hairline-strong)] opacity-60 [mask-image:radial-gradient(circle_at_top_right,black,transparent_75%)]"
+            className="absolute -inset-[1px] rounded-sm pointer-events-none z-20 border border-[#22d3ee]/25 opacity-70 [mask-image:radial-gradient(circle_at_top_right,black,transparent_75%)]"
           />
 
           {/* Top Meta Bar */}
@@ -246,29 +246,29 @@ export function FloatingPhotoCard() {
             style={{ transform: "translateZ(8px)" }}
           >
             <div className="flex items-center gap-1.5">
-              <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)] shadow-[0_0_6px_var(--accent)]" aria-hidden="true" />
-              <span className="font-semibold text-[var(--text)] tracking-wider">DOSSIER // SPEC-01</span>
+              <span className="h-1.5 w-1.5 rounded-full bg-[#22d3ee] shadow-[0_0_8px_#22d3ee]" aria-hidden="true" />
+              <span className="font-semibold text-[#e5e7eb] tracking-wider">DOSSIER // SPEC-01</span>
             </div>
-            <span className="text-[var(--accent-ink)] font-semibold tracking-wider">ACTIVE BUILDER</span>
+            <span className="text-[#22d3ee] font-semibold tracking-wider">ACTIVE BUILDER</span>
           </div>
 
           {/* Builder Portrait Aperture */}
           <div
-            className="relative aspect-square w-full rounded-xs border border-[var(--hairline-strong)] bg-[var(--surface-subtle)] overflow-hidden flex items-center justify-center group shadow-md my-1"
+            className="relative aspect-square w-full rounded-xs border border-[var(--hairline-strong)] bg-[#0f172a] overflow-hidden flex items-center justify-center group shadow-md my-1"
             style={{ transform: "translateZ(24px)" }}
             data-cursor="inspect"
             title="Builder Character Visual"
           >
-            {/* Technical Corner Crosshairs */}
-            <span className="absolute top-1.5 left-1.5 text-[9px] font-mono text-[var(--muted)] select-none z-10">┌</span>
-            <span className="absolute top-1.5 right-1.5 text-[9px] font-mono text-[var(--muted)] select-none z-10">┐</span>
-            <span className="absolute bottom-1.5 left-1.5 text-[9px] font-mono text-[var(--muted)] select-none z-10">└</span>
-            <span className="absolute bottom-1.5 right-1.5 text-[9px] font-mono text-[var(--muted)] select-none z-10">┘</span>
+            {/* Technical Corner Crosshairs in Cyan/Teal */}
+            <span className="absolute top-1.5 left-1.5 text-[9px] font-mono text-[#0d9488] select-none z-10">┌</span>
+            <span className="absolute top-1.5 right-1.5 text-[9px] font-mono text-[#0d9488] select-none z-10">┐</span>
+            <span className="absolute bottom-1.5 left-1.5 text-[9px] font-mono text-[#0d9488] select-none z-10">└</span>
+            <span className="absolute bottom-1.5 right-1.5 text-[9px] font-mono text-[#0d9488] select-none z-10">┘</span>
 
-            {/* Subtle Studio Scanline Sweep */}
+            {/* Subtle Cyan Scanline Sweep */}
             <div
               aria-hidden="true"
-              className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-transparent via-white/[0.04] to-transparent pointer-events-none z-20 animate-[scanline_5s_ease-in-out_infinite]"
+              className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-transparent via-[#22d3ee]/15 to-transparent pointer-events-none z-20 animate-[scanline_5s_ease-in-out_infinite]"
             />
 
             {!imgError ? (
@@ -281,15 +281,15 @@ export function FloatingPhotoCard() {
               />
             ) : (
               <div className="flex flex-col items-center justify-center text-center p-4 z-10 select-none">
-                <div className="h-16 w-16 rounded-xs border border-[var(--accent)]/50 bg-[var(--accent)]/[0.08] flex items-center justify-center mb-3 shadow-sm transition-transform duration-300 group-hover:scale-110">
-                  <span className="font-mono text-xl font-bold tracking-widest text-[var(--accent-ink)]">
+                <div className="h-16 w-16 rounded-xs border border-[#0d9488]/50 bg-[#0d9488]/15 flex items-center justify-center mb-3 shadow-sm transition-transform duration-300 group-hover:scale-110">
+                  <span className="font-mono text-xl font-bold tracking-widest text-[#22d3ee]">
                     MA
                   </span>
                 </div>
-                <span className="font-annotation text-[11px] uppercase tracking-[0.16em] text-[var(--text)] font-semibold">
+                <span className="font-annotation text-[11px] uppercase tracking-[0.16em] text-[#e5e7eb] font-semibold">
                   Mohd Alsaf
                 </span>
-                <span className="font-annotation text-[9px] text-[var(--muted)] mt-0.5 font-mono">
+                <span className="font-annotation text-[9px] text-[#9ca3af] mt-0.5 font-mono">
                   BUILDER DESIGNATION
                 </span>
               </div>
@@ -299,16 +299,16 @@ export function FloatingPhotoCard() {
           {/* Builder Details */}
           <div className="mt-4 space-y-2.5 font-mono text-xs" style={{ transform: "translateZ(12px)" }}>
             <div className="flex items-center justify-between border-b border-[var(--hairline)] pb-2">
-              <span className="text-[var(--muted)] text-[10px] uppercase">LOCATION</span>
-              <span className="text-[var(--text)] font-medium">Pune, India</span>
+              <span className="text-[#9ca3af] text-[10px] uppercase">LOCATION</span>
+              <span className="text-[#e5e7eb] font-medium">Pune, India</span>
             </div>
             <div className="flex items-center justify-between border-b border-[var(--hairline)] pb-2">
-              <span className="text-[var(--muted)] text-[10px] uppercase">PRIMARY BUILD</span>
-              <span className="text-[var(--text)] font-semibold">CAMPLX</span>
+              <span className="text-[#9ca3af] text-[10px] uppercase">PRIMARY BUILD</span>
+              <span className="text-[#22d3ee] font-semibold">CAMPLX</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-[var(--muted)] text-[10px] uppercase">STATUS</span>
-              <span className="text-[var(--accent-ink)] font-semibold">Active · Phase 1 &amp; 2</span>
+              <span className="text-[#9ca3af] text-[10px] uppercase">STATUS</span>
+              <span className="text-[#22d3ee] font-semibold">Active · Phase 1 &amp; 2</span>
             </div>
           </div>
 
@@ -317,13 +317,13 @@ export function FloatingPhotoCard() {
             className="mt-4 pt-3 border-t border-[var(--hairline)] flex items-center justify-between font-mono text-xs"
             style={{ transform: "translateZ(8px)" }}
           >
-            <span className="text-[var(--muted)] text-[10px]">GITHUB:</span>
+            <span className="text-[#9ca3af] text-[10px]">GITHUB:</span>
             <Link
               href={HANDLES.github.href}
               target="_blank"
               rel="noopener noreferrer"
               data-cursor="clickable"
-              className="text-[var(--accent-ink)] hover:underline inline-flex items-center gap-1 font-medium text-[11px]"
+              className="text-[#22d3ee] hover:underline inline-flex items-center gap-1 font-medium text-[11px]"
             >
               <span>sayyedmohdalsaf06-afk</span>
               <span aria-hidden="true">↗</span>

@@ -73,8 +73,8 @@ export function Hero() {
         }`}
       >
         {/* Kicker Technical Badge */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-xs border border-[var(--hairline-strong)] bg-[var(--surface-raised)]/70 font-annotation text-[11px] uppercase tracking-[0.20em] text-[var(--muted)] mb-5 shadow-xs">
-          <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)] animate-pulse shadow-[0_0_6px_var(--accent)]" aria-hidden="true" />
+        <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-xs border border-[#0d9488]/40 bg-[#111827]/80 font-annotation text-[11px] uppercase tracking-[0.20em] text-[#22d3ee] mb-5 shadow-sm">
+          <span className="h-1.5 w-1.5 rounded-full bg-[#22d3ee] animate-pulse shadow-[0_0_8px_#22d3ee]" aria-hidden="true" />
           <span>BUILDER · CSE · INTELLIGENT SYSTEMS</span>
         </div>
 
@@ -82,9 +82,9 @@ export function Hero() {
         <h1
           id="hero-name"
           data-cursor="scan"
-          className="text-5xl sm:text-7xl md:text-8xl lg:text-[104px] font-extrabold tracking-[-0.04em] uppercase leading-[0.95] text-[var(--text)] select-none drop-shadow-sm group transition-transform duration-300"
+          className="text-5xl sm:text-7xl md:text-8xl lg:text-[104px] font-extrabold tracking-[-0.04em] uppercase leading-[0.95] text-[#e5e7eb] select-none drop-shadow-sm group transition-transform duration-300"
         >
-          <span className="inline-block transition-transform duration-500 group-hover:scale-[1.02] group-hover:text-[var(--accent-ink)]">
+          <span className="inline-block transition-transform duration-500 group-hover:scale-[1.02] group-hover:text-[#22d3ee]">
             MOHD
           </span>{" "}
           <span className="inline-block transition-transform duration-500 group-hover:scale-[1.02]">
@@ -92,18 +92,18 @@ export function Hero() {
           </span>
         </h1>
 
-        {/* Core Philosophy / Headline */}
+        {/* Core Philosophy / Headline in Vibrant Cyan-Teal */}
         <p
           data-cursor="scan"
-          className="mt-6 font-annotation text-xs sm:text-sm uppercase tracking-[0.18em] text-[var(--accent-ink)] font-semibold max-w-xl mx-auto"
+          className="mt-6 font-annotation text-xs sm:text-sm uppercase tracking-[0.18em] text-[#22d3ee] font-semibold max-w-xl mx-auto"
         >
-          I turn ideas into working things — and I figure them out in the open.
+          I turn ideas into working things – and I figure them out in the open.
         </p>
 
         {/* Supporting Context */}
         <p
           data-cursor="scan"
-          className="mt-3 text-sm sm:text-base md:text-lg leading-relaxed text-[var(--muted)] max-w-2xl mx-auto font-normal"
+          className="mt-3 text-sm sm:text-base md:text-lg leading-relaxed text-[#9ca3af] max-w-2xl mx-auto font-normal"
         >
           Documenting software experiments, algorithmic logic, and AI systems. Building practical tools and learning in public on the journey toward impactful intelligent products.
         </p>
@@ -114,7 +114,7 @@ export function Hero() {
             type="button"
             onClick={scrollToProject}
             data-cursor="clickable"
-            className="group inline-flex items-center gap-2 font-annotation text-xs sm:text-sm text-[var(--accent-ink)] border border-[var(--hairline-strong)] px-5 py-2.5 rounded-xs bg-[var(--surface-raised)] hover:border-[var(--accent)] hover:bg-[var(--accent)]/[0.08] transition-all shadow-xs"
+            className="group inline-flex items-center gap-2 font-annotation text-xs sm:text-sm text-[#22d3ee] border border-[#0d9488]/60 px-5 py-2.5 rounded-xs bg-[#0d9488]/15 hover:bg-[#22d3ee] hover:text-[#0a0f14] hover:border-[#22d3ee] transition-all duration-200 shadow-sm font-medium"
           >
             <span>Explore CAMPLX</span>
             <span className="transition-transform duration-150 group-hover:translate-x-1" aria-hidden="true">
@@ -126,9 +126,9 @@ export function Hero() {
             type="button"
             onClick={scrollToIdentity}
             data-cursor="clickable"
-            className="inline-flex items-center gap-2 font-annotation text-xs sm:text-sm text-[var(--muted)] border border-[var(--hairline)] hover:border-[var(--hairline-strong)] hover:text-[var(--text)] hover:bg-[var(--surface-subtle)] px-4 py-2.5 rounded-xs transition-all"
+            className="inline-flex items-center gap-2 font-annotation text-xs sm:text-sm text-[#e5e7eb] border border-[var(--hairline-strong)] hover:border-[#22d3ee] hover:text-[#22d3ee] hover:bg-[#111827] px-4 py-2.5 rounded-xs transition-all duration-200"
           >
-            <span>View 3D Identity Object</span>
+            <span>View 3D Object</span>
             <span aria-hidden="true">↓</span>
           </button>
         </div>

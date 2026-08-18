@@ -205,16 +205,16 @@ export function ProjectExperience() {
       card!.style.transform = `${transStr} ${rotStr}`;
       card!.style.opacity = `${popOpacity.toFixed(2)}`;
 
-      // 4. Studio Lens Reflection & Glare
+      // 4. Specular Teal & Cyan Lens Reflection
       if (sheen) {
         const glareY = localMouseY + (1 - clamp(popProgress, 0, 1)) * 120;
-        sheen.style.background = `radial-gradient(circle 460px at ${localMouseX}px ${glareY.toFixed(1)}px, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.01) 45%, transparent 65%)`;
+        sheen.style.background = `radial-gradient(circle 460px at ${localMouseX}px ${glareY.toFixed(1)}px, rgba(34, 211, 238, 0.16) 0%, rgba(13, 148, 136, 0.04) 50%, transparent 68%)`;
       }
 
-      // 5. Studio Ambient Underglow
+      // 5. Ambient Teal Underglow
       if (glow) {
         const glowScale = 0.70 + popProgress * 0.42 + (dragging ? 0.20 : 0);
-        const glowOpacity = clamp(popProgress * 0.40 + (dragging ? 0.20 : 0), 0, 0.75);
+        const glowOpacity = clamp(popProgress * 0.42 + (dragging ? 0.20 : 0), 0, 0.75);
         glow.style.transform = `translate3d(${totalTransX.toFixed(2)}px, ${(totalTransY + 16).toFixed(2)}px, -40px) scale(${glowScale.toFixed(3)})`;
         glow.style.opacity = `${glowOpacity.toFixed(2)}`;
       }
@@ -223,7 +223,7 @@ export function ProjectExperience() {
       const shadowX = (-totalRotY * 2.4 + dragCurX * 0.22).toFixed(1);
       const shadowY = (totalRotX * 2.4 + 14 + popProgress * 16 + Math.abs(dragCurY) * 0.35).toFixed(1);
       const shadowBlur = (16 + popProgress * 32).toFixed(1);
-      card!.style.boxShadow = `${shadowX}px ${shadowY}px ${shadowBlur}px rgba(0, 0, 0, 0.55)`;
+      card!.style.boxShadow = `${shadowX}px ${shadowY}px ${shadowBlur}px rgba(0, 0, 0, 0.6)`;
     }
 
     function frame() {
@@ -349,28 +349,28 @@ export function ProjectExperience() {
     >
       {/* Section Header */}
       <div className="mb-8">
-        <div className="flex items-center gap-2.5 font-annotation text-xs uppercase tracking-[0.16em] text-[var(--muted)] mb-2.5">
+        <div className="flex items-center gap-2.5 font-annotation text-xs uppercase tracking-[0.16em] text-[#9ca3af] mb-2.5">
           <span>01 · Primary Build</span>
           <span aria-hidden="true" className="h-2.5 w-px bg-[var(--hairline-strong)]" />
-          <span className="text-[var(--accent-ink)] font-medium">In Active Build · Phase 1 & 2</span>
+          <span className="text-[#22d3ee] font-medium">In Active Build · Phase 1 & 2</span>
         </div>
 
         <div className="flex flex-wrap items-baseline gap-3">
           <h2
             id="project-title"
             data-cursor="scan"
-            className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-[-0.03em] text-[var(--text)] select-none"
+            className="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-[-0.03em] text-[#e5e7eb] select-none"
           >
             CAMPLX
           </h2>
-          <span className="font-annotation text-xs sm:text-sm text-[var(--muted)] uppercase tracking-wider">
+          <span className="font-annotation text-xs sm:text-sm text-[#9ca3af] uppercase tracking-wider">
             Campus + Exchange + Community
           </span>
         </div>
 
         <p
           data-cursor="scan"
-          className="mt-3 text-sm sm:text-base text-[var(--muted)] max-w-xl font-normal leading-relaxed"
+          className="mt-3 text-sm sm:text-base text-[#9ca3af] max-w-xl font-normal leading-relaxed"
         >
           &quot;Trade smarter on campus.&quot; A verified campus-first marketplace and community platform for students to buy, sell, exchange, donate, and request items within their college community.
         </p>
@@ -378,11 +378,11 @@ export function ProjectExperience() {
 
       {/* Interactive Physical Object Container */}
       <div className="relative w-full [perspective:1200px]">
-        {/* Ambient Studio Underglow Aura */}
+        {/* Ambient Teal + Cyan Underglow Aura */}
         <div
           ref={glowRef}
           aria-hidden="true"
-          className="absolute inset-x-8 -inset-y-4 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.05)_0%,rgba(245,158,11,0.06)_45%,transparent_75%)] opacity-25 blur-2xl pointer-events-none -z-10 transition-opacity duration-300"
+          className="absolute inset-x-8 -inset-y-4 rounded-full bg-[radial-gradient(ellipse_at_center,rgba(13,148,136,0.35)_0%,rgba(34,211,238,0.18)_45%,transparent_75%)] opacity-30 blur-2xl pointer-events-none -z-10 transition-opacity duration-300"
         />
 
         <div

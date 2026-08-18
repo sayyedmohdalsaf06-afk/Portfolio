@@ -250,10 +250,12 @@ export function BackgroundField() {
             const lineAlpha = lineProximity * Math.min(p1.alpha, p2.alpha) * 0.45 * mouseBoost;
 
             if (lineAlpha > 0.02) {
-              ctx.lineWidth = p1.distToMouse < 150 ? 1.0 : 0.6;
+              ctx.lineWidth = p1.distToMouse < 150 ? 1.1 : 0.7;
               ctx.strokeStyle = isDark
-                ? `rgba(244, 244, 246, ${Math.min(0.25, lineAlpha * 0.28)})`
-                : `rgba(20, 21, 24, ${Math.min(0.20, lineAlpha * 0.22)})`;
+                ? (i % 2 === 0
+                    ? `rgba(34, 211, 238, ${Math.min(0.65, lineAlpha * 0.70)})`
+                    : `rgba(13, 148, 136, ${Math.min(0.55, lineAlpha * 0.60)})`)
+                : `rgba(13, 148, 136, ${Math.min(0.50, lineAlpha * 0.50)})`;
               ctx.beginPath();
               ctx.moveTo(p1.px, p1.py);
               ctx.lineTo(p2.px, p2.py);
@@ -279,17 +281,17 @@ export function BackgroundField() {
           if (pdist < 190) {
             const pulseX = pt1.px + (pt2.px - pt1.px) * pulse.progress;
             const pulseY = pt1.py + (pt2.py - pt1.py) * pulse.progress;
-            const pulseSize = 2.0 * ((pt1.scale + pt2.scale) / 2);
+            const pulseSize = 2.2 * ((pt1.scale + pt2.scale) / 2);
 
-            ctx.fillStyle = isDark ? "rgba(244, 244, 246, 0.85)" : "rgba(20, 21, 24, 0.75)";
+            ctx.fillStyle = isDark ? "rgba(34, 211, 238, 0.95)" : "rgba(13, 148, 136, 0.90)";
             ctx.beginPath();
             ctx.arc(pulseX, pulseY, pulseSize, 0, Math.PI * 2);
             ctx.fill();
 
-            // Studio subtle pulse aura
-            ctx.fillStyle = isDark ? "rgba(245, 158, 11, 0.25)" : "rgba(217, 119, 6, 0.20)";
+            // Teal pulse aura
+            ctx.fillStyle = isDark ? "rgba(13, 148, 136, 0.40)" : "rgba(13, 148, 136, 0.25)";
             ctx.beginPath();
-            ctx.arc(pulseX, pulseY, pulseSize * 2.2, 0, Math.PI * 2);
+            ctx.arc(pulseX, pulseY, pulseSize * 2.5, 0, Math.PI * 2);
             ctx.fill();
           }
         }
@@ -299,19 +301,19 @@ export function BackgroundField() {
       for (const item of projected) {
         const { px, py, scale, p, alpha, distToMouse } = item;
         const isNearby = distToMouse < 170;
-        const ptSize = p.size * scale * (isNearby ? 1.35 : 1.0);
+        const ptSize = p.size * scale * (isNearby ? 1.40 : 1.0);
 
         if (p.hasCross) {
           // Technical coordinate cross (+)
-          const arm = (ptSize + 3.5) * scale;
+          const arm = (ptSize + 3.8) * scale;
           ctx.strokeStyle = isDark
             ? isNearby
-              ? `rgba(245, 158, 11, ${alpha * 0.9})`
-              : `rgba(244, 244, 246, ${alpha * 0.5})`
+              ? `rgba(34, 211, 238, ${alpha * 0.95})`
+              : `rgba(13, 148, 136, ${alpha * 0.70})`
             : isNearby
-            ? `rgba(217, 119, 6, ${alpha * 0.8})`
-            : `rgba(20, 21, 24, ${alpha * 0.4})`;
-          ctx.lineWidth = isNearby ? 1.2 : 0.8;
+            ? `rgba(13, 148, 136, ${alpha * 0.85})`
+            : `rgba(15, 23, 42, ${alpha * 0.50})`;
+          ctx.lineWidth = isNearby ? 1.3 : 0.8;
           ctx.beginPath();
           ctx.moveTo(px - arm, py);
           ctx.lineTo(px + arm, py);
@@ -322,22 +324,22 @@ export function BackgroundField() {
           // Luminous node core
           ctx.fillStyle = isDark
             ? isNearby
-              ? `rgba(245, 158, 11, ${alpha * 0.95})`
-              : `rgba(244, 244, 246, ${alpha * 0.55})`
+              ? `rgba(34, 211, 238, ${alpha * 0.95})`
+              : `rgba(13, 148, 136, ${alpha * 0.75})`
             : isNearby
-            ? `rgba(217, 119, 6, ${alpha * 0.85})`
-            : `rgba(20, 21, 24, ${alpha * 0.45})`;
+            ? `rgba(13, 148, 136, ${alpha * 0.85})`
+            : `rgba(15, 23, 42, ${alpha * 0.50})`;
 
           ctx.beginPath();
-          ctx.arc(px, py, Math.max(1.2, ptSize), 0, Math.PI * 2);
+          ctx.arc(px, py, Math.max(1.3, ptSize), 0, Math.PI * 2);
           ctx.fill();
 
           // Rotating technical radar halo ring
           if (p.hasRing || isNearby) {
             const ringRadius = Math.max(4.0, ptSize + 4.5);
             ctx.strokeStyle = isDark
-              ? `rgba(244, 244, 246, ${alpha * 0.25})`
-              : `rgba(20, 21, 24, ${alpha * 0.20})`;
+              ? `rgba(34, 211, 238, ${alpha * 0.35})`
+              : `rgba(13, 148, 136, ${alpha * 0.25})`;
             ctx.lineWidth = 0.8;
             ctx.beginPath();
             ctx.arc(px, py, ringRadius, 0, Math.PI * 2);
@@ -347,9 +349,9 @@ export function BackgroundField() {
             const tickAngle = time * 1.3 + p.pulsePhase;
             const tx = px + Math.cos(tickAngle) * ringRadius;
             const ty = py + Math.sin(tickAngle) * ringRadius;
-            ctx.fillStyle = isDark ? `rgba(245, 158, 11, ${alpha * 0.8})` : `rgba(217, 119, 6, ${alpha * 0.7})`;
+            ctx.fillStyle = isDark ? `rgba(34, 211, 238, ${alpha * 0.9})` : `rgba(13, 148, 136, ${alpha * 0.8})`;
             ctx.beginPath();
-            ctx.arc(tx, ty, 1.0, 0, Math.PI * 2);
+            ctx.arc(tx, ty, 1.1, 0, Math.PI * 2);
             ctx.fill();
           }
         }
@@ -358,21 +360,21 @@ export function BackgroundField() {
         if (p.tag && isNearby && p.tier !== "far") {
           ctx.font = `600 ${Math.max(8.5, 10 * scale)}px "JetBrains Mono", monospace`;
           ctx.fillStyle = isDark
-            ? `rgba(165, 185, 255, ${alpha * 0.9})`
-            : `rgba(42, 70, 224, ${alpha * 0.9})`;
-          ctx.fillText(p.tag, px + ptSize + 5, py - 2);
+            ? `rgba(34, 211, 238, ${Math.min(1.0, alpha * 1.2)})`
+            : `rgba(13, 148, 136, ${Math.min(1.0, alpha * 1.1)})`;
+          ctx.fillText(p.tag, px + 8, py - 6);
         }
       }
 
       // 5. Breathing Ambient Cursor Light Field
       const glowGrad = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, 340);
       if (isDark) {
-        glowGrad.addColorStop(0, "rgba(60, 95, 255, 0.22)");
-        glowGrad.addColorStop(0.45, "rgba(42, 70, 224, 0.08)");
+        glowGrad.addColorStop(0, "rgba(34, 211, 238, 0.12)");
+        glowGrad.addColorStop(0.45, "rgba(13, 148, 136, 0.05)");
         glowGrad.addColorStop(1, "transparent");
       } else {
-        glowGrad.addColorStop(0, "rgba(42, 70, 224, 0.12)");
-        glowGrad.addColorStop(0.45, "rgba(42, 70, 224, 0.04)");
+        glowGrad.addColorStop(0, "rgba(13, 148, 136, 0.10)");
+        glowGrad.addColorStop(0.45, "rgba(13, 148, 136, 0.03)");
         glowGrad.addColorStop(1, "transparent");
       }
       ctx.fillStyle = glowGrad;
