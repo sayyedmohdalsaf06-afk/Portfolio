@@ -29,12 +29,12 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // 1. Scene & Camera Setup
+    // 1. Scene & Camera Setup (Adjusted upside & 5% size reduction)
     const width = 200;
     const height = 200;
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
-    camera.position.set(0, -0.02, 2.65);
+    camera.position.set(0, -0.07, 2.78);
 
     const renderer = new THREE.WebGLRenderer({
       canvas,
@@ -480,7 +480,7 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
         }
       }}
       aria-label="Interactive 3D animated character guide. Click to scroll down to workstation and projects"
-      className="group relative inline-flex items-center gap-3 select-none cursor-pointer py-1 transition-transform duration-300 hover:scale-[1.02] focus-visible:outline-2 focus-visible:outline-[var(--focus-ring)] rounded-xs"
+      className="group relative inline-flex items-center gap-3 select-none cursor-pointer py-1 -translate-y-2.5 sm:-translate-y-3 transition-transform duration-300 hover:scale-[1.02] focus-visible:outline-2 focus-visible:outline-[var(--focus-ring)] rounded-xs"
     >
       {/* Speech Bubble / Dialogue Balloon */}
       <div
@@ -512,8 +512,8 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
         />
       </div>
 
-      {/* Real-time WebGL 3D Animated Character Canvas (Full body, uncropped, floating) */}
-      <div className="relative shrink-0 h-16 w-16 sm:h-20 sm:w-20 flex items-center justify-center">
+      {/* Real-time WebGL 3D Animated Character Canvas (Full body, uncropped, floating, 5% reduced size) */}
+      <div className="relative shrink-0 h-15 w-15 sm:h-[74px] sm:w-[74px] flex items-center justify-center">
         {/* Luminous Cyan/Teal Halo */}
         <div
           aria-hidden="true"
