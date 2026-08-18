@@ -2,6 +2,7 @@ import { Hero } from "@/components/sections/hero";
 import { FloatingPhotoCard } from "@/components/sections/floating-photo-card";
 import { IdentityTerminal } from "@/components/sections/identity-terminal";
 import { ProjectExperience } from "@/components/sections/project-experience";
+import { AnimeCharacter3D } from "@/components/sections/anime-character-3d";
 import { TopNavigation } from "@/components/system/top-navigation";
 
 /**
@@ -12,6 +13,7 @@ import { TopNavigation } from "@/components/system/top-navigation";
  * - Main 2-Column Split:
  *   - Left: 3D Floating Identity Photo Card (Tactile Builder Dossier)
  *   - Right: Stream of real work (Centered Big Name Hero -> Terminal -> CAMPLX)
+ * - Persistent: Interactive 3D Guide Companion Bot following down across all scroll stops
  */
 export default function HomePage() {
   return (
@@ -33,6 +35,9 @@ export default function HomePage() {
           </main>
         </div>
       </div>
+
+      {/* Interactive 3D Character Companion Bot (follows down dynamically across all stops) */}
+      <AnimeCharacter3D />
     </div>
   );
 }

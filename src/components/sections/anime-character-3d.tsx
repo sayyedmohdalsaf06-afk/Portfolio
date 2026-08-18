@@ -4,24 +4,44 @@ import { useEffect, useRef, useState } from "react";
 import * as THREE from "three";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
 
-interface AnimeCharacter3DProps {
-  onScrollDown?: () => void;
-}
-
-export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
+export function AnimeCharacter3D() {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [hovered, setHovered] = useState(false);
+  const [currentSection, setCurrentSection] = useState<"hero" | "whoami" | "project-experience">("hero");
   const prefersReduced = useReducedMotion();
 
-  const handleClick = () => {
-    if (onScrollDown) {
-      onScrollDown();
-    } else {
-      const target = document.getElementById("whoami") || document.getElementById("project-experience");
-      if (target) {
-        target.scrollIntoView({ behavior: "smooth" });
+  // Track active scroll stop dynamically as user slides down
+  useEffect(() => {
+    const handleScroll = () => {
+      const whoamiEl = document.getElementById("whoami");
+      const projectEl = document.getElementById("project-experience");
+
+      const scrollY = window.scrollY + window.innerHeight * 0.45;
+
+      if (projectEl && scrollY >= projectEl.offsetTop) {
+        setCurrentSection("project-experience");
+      } else if (whoamiEl && scrollY >= whoamiEl.offsetTop) {
+        setCurrentSection("whoami");
+      } else {
+        setCurrentSection("hero");
       }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const handleClick = () => {
+    let targetId = "whoami";
+    if (currentSection === "hero") targetId = "whoami";
+    else if (currentSection === "whoami") targetId = "project-experience";
+    else if (currentSection === "project-experience") targetId = "hero";
+
+    const el = document.getElementById(targetId);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -29,12 +49,12 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    // 1. Scene & Camera Setup (Adjusted upside & 5% size reduction)
-    const width = 200;
-    const height = 200;
+    // 1. Scene & Camera Setup
+    const width = 180;
+    const height = 180;
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(40, width / height, 0.1, 100);
-    camera.position.set(0, -0.07, 2.78);
+    const camera = new THREE.PerspectiveCamera(38, width / height, 0.1, 100);
+    camera.position.set(0, -0.02, 2.70);
 
     const renderer = new THREE.WebGLRenderer({
       canvas,
@@ -61,36 +81,31 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
     tealFillLight.position.set(0, -1.8, 2.2);
     scene.add(tealFillLight);
 
-    // 3. Materials — Calibrated directly from Mohd Alsaf's portrait
-    // Warm natural olive skin complexion
+    // 3. Materials — Modeled on Mohd Alsaf's portrait
     const skinMat = new THREE.MeshStandardMaterial({
       color: 0xdeaa78,
       roughness: 0.45,
       metalness: 0.05,
     });
 
-    // Dark espresso hair
     const hairMat = new THREE.MeshStandardMaterial({
       color: 0x161312,
       roughness: 0.70,
       metalness: 0.10,
     });
 
-    // Trimmed beard & mustache material
     const beardMat = new THREE.MeshStandardMaterial({
       color: 0x1a1614,
       roughness: 0.85,
       metalness: 0.02,
     });
 
-    // Jet black hoodie
     const hoodieMat = new THREE.MeshStandardMaterial({
       color: 0x111318,
       roughness: 0.60,
       metalness: 0.15,
     });
 
-    // Vibrant Glowing Cyan Cyber Accent
     const cyanGlowMat = new THREE.MeshStandardMaterial({
       color: 0x22d3ee,
       emissive: 0x22d3ee,
@@ -128,7 +143,7 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
     headGroup.position.set(0, 0.32, 0);
     characterRoot.add(headGroup);
 
-    // Head base (cute anime chibi proportions)
+    // Head base (natural anime chibi proportions)
     const headGeo = new THREE.SphereGeometry(0.46, 32, 32);
     headGeo.scale(0.98, 1.0, 0.92);
     const headMesh = new THREE.Mesh(headGeo, skinMat);
@@ -165,7 +180,7 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
       catchlight.position.set(xPos + (idx === 0 ? 0.02 : -0.02), 0.075, 0.45);
       eyeGroup.add(catchlight);
 
-      // Dark Defined Eyebrows (matching photo)
+      // Dark Defined Eyebrows
       const browGeo = new THREE.CylinderGeometry(0.018, 0.012, 0.16, 8);
       browGeo.rotateZ(Math.PI / 2 + (idx === 0 ? 0.12 : -0.12));
       const brow = new THREE.Mesh(browGeo, beardMat);
@@ -173,7 +188,7 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
       headGroup.add(brow);
     });
 
-    // (B) Facial Hair (Neat trimmed beard, mustache, and goatee matching Alsaf's portrait)
+    // (B) Facial Hair (Neat trimmed beard, mustache, and goatee)
     // 1. Mustache
     const stacheLeftGeo = new THREE.CylinderGeometry(0.016, 0.010, 0.13, 8);
     stacheLeftGeo.rotateZ(Math.PI / 2.3);
@@ -203,18 +218,16 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
       headGroup.add(jawBeard);
     });
 
-    // (C) Stylized Modern Haircut (Textured top crop + fringe swept over forehead)
+    // (C) Stylized Hair (Textured top crop + fringe swept across forehead)
     const hairGroup = new THREE.Group();
     headGroup.add(hairGroup);
 
-    // Base Hair Shell
     const hairBaseGeo = new THREE.SphereGeometry(0.49, 24, 24);
     hairBaseGeo.scale(1.01, 1.04, 0.98);
     const hairBase = new THREE.Mesh(hairBaseGeo, hairMat);
     hairBase.position.set(0, 0.07, -0.03);
     hairGroup.add(hairBase);
 
-    // Textured Hair Strands & Fringe (matching Alsaf's hair volume)
     interface HairStrandConfig {
       pos: [number, number, number];
       rot: [number, number, number];
@@ -222,15 +235,12 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
     }
 
     const hairStrands: HairStrandConfig[] = [
-      // Top Volume
       { pos: [0, 0.46, 0.16], rot: [-0.15, 0, 0.05], scale: [0.18, 0.26, 0.16] },
       { pos: [-0.16, 0.44, 0.14], rot: [-0.10, 0.2, 0.3], scale: [0.16, 0.24, 0.14] },
       { pos: [0.16, 0.44, 0.14], rot: [-0.10, -0.2, -0.3], scale: [0.16, 0.24, 0.14] },
-      // Front Fringe Locks swept across forehead
       { pos: [-0.10, 0.30, 0.38], rot: [-0.65, 0.25, 0.3], scale: [0.11, 0.20, 0.10] },
       { pos: [0.08, 0.32, 0.38], rot: [-0.60, -0.20, -0.25], scale: [0.12, 0.20, 0.11] },
       { pos: [0.24, 0.26, 0.34], rot: [-0.50, -0.35, -0.5], scale: [0.10, 0.18, 0.10] },
-      // Side Taper details
       { pos: [-0.36, 0.18, 0.15], rot: [0.1, 0.3, 0.6], scale: [0.12, 0.22, 0.12] },
       { pos: [0.36, 0.18, 0.15], rot: [0.1, -0.3, -0.6], scale: [0.12, 0.22, 0.12] },
     ];
@@ -247,21 +257,18 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
     const headsetGroup = new THREE.Group();
     headGroup.add(headsetGroup);
 
-    // Slim headband
     const bandGeo = new THREE.TorusGeometry(0.48, 0.025, 10, 32, Math.PI);
     const band = new THREE.Mesh(bandGeo, headsetChassisMat);
     band.rotation.x = Math.PI / 2;
     band.position.set(0, 0.06, 0);
     headsetGroup.add(band);
 
-    // Glowing cyan strip
     const bandStripGeo = new THREE.TorusGeometry(0.485, 0.012, 8, 32, Math.PI);
     const bandStrip = new THREE.Mesh(bandStripGeo, cyanGlowMat);
     bandStrip.rotation.x = Math.PI / 2;
     bandStrip.position.set(0, 0.06, 0);
     headsetGroup.add(bandStrip);
 
-    // Earcups with glowing cyan rings
     [-0.49, 0.49].forEach((xPos, idx) => {
       const cupGeo = new THREE.CylinderGeometry(0.13, 0.13, 0.07, 20);
       cupGeo.rotateZ(Math.PI / 2);
@@ -276,7 +283,6 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
       headsetGroup.add(ring);
     });
 
-    // Headset Mic
     const micArmGeo = new THREE.CylinderGeometry(0.012, 0.012, 0.24, 8);
     micArmGeo.rotateZ(Math.PI / 2.8);
     const micArm = new THREE.Mesh(micArmGeo, headsetChassisMat);
@@ -293,65 +299,40 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
     bodyGroup.position.set(0, -0.30, 0);
     characterRoot.add(bodyGroup);
 
-    // Hoodie Torso
     const torsoGeo = new THREE.CylinderGeometry(0.26, 0.34, 0.50, 20);
     const torso = new THREE.Mesh(torsoGeo, hoodieMat);
     bodyGroup.add(torso);
 
-    // Hoodie Collar Rim
     const hoodCollarGeo = new THREE.TorusGeometry(0.27, 0.07, 10, 20);
     hoodCollarGeo.rotateX(Math.PI / 2);
     const hoodCollar = new THREE.Mesh(hoodCollarGeo, hoodieMat);
     hoodCollar.position.set(0, 0.24, 0);
     bodyGroup.add(hoodCollar);
 
-    // Chest Cyan Tech Beacon
     const chestBeaconGeo = new THREE.CylinderGeometry(0.035, 0.035, 0.012, 12);
     chestBeaconGeo.rotateX(Math.PI / 2);
     const chestBeacon = new THREE.Mesh(chestBeaconGeo, cyanGlowMat);
     chestBeacon.position.set(0, 0.10, 0.28);
     bodyGroup.add(chestBeacon);
 
-    // (F) Pointing Arm (Right Arm)
+    // (F) Natural Resting Arms (No extended pointing finger)
+    // 1. Right Arm (Natural Resting Stance)
     const rightArmGroup = new THREE.Group();
     rightArmGroup.position.set(0.33, 0.14, 0);
     bodyGroup.add(rightArmGroup);
 
     const rUpperArmGeo = new THREE.CylinderGeometry(0.08, 0.07, 0.22, 14);
     const rUpperArm = new THREE.Mesh(rUpperArmGeo, hoodieMat);
-    rUpperArm.position.set(0.05, -0.09, 0.04);
-    rUpperArm.rotation.set(0.25, 0, -0.25);
+    rUpperArm.position.set(0.05, -0.09, 0.02);
+    rUpperArm.rotation.set(0.1, 0, -0.20);
     rightArmGroup.add(rUpperArm);
 
-    // Forearm & Pointing Hand
-    const rForearmGroup = new THREE.Group();
-    rForearmGroup.position.set(0.10, -0.19, 0.08);
-    rightArmGroup.add(rForearmGroup);
+    const rHandGeo = new THREE.SphereGeometry(0.062, 14, 14);
+    const rHand = new THREE.Mesh(rHandGeo, skinMat);
+    rHand.position.set(0.10, -0.21, 0.06);
+    rightArmGroup.add(rHand);
 
-    const rForearmGeo = new THREE.CylinderGeometry(0.068, 0.062, 0.18, 14);
-    const rForearm = new THREE.Mesh(rForearmGeo, hoodieMat);
-    rForearm.position.set(0, -0.07, 0);
-    rForearmGroup.add(rForearm);
-
-    // Hand mesh
-    const handGeo = new THREE.SphereGeometry(0.062, 14, 14);
-    const hand = new THREE.Mesh(handGeo, skinMat);
-    hand.position.set(0, -0.17, 0.02);
-    rForearmGroup.add(hand);
-
-    // Extended Pointing Finger (Pointing Downwards ↓)
-    const fingerGeo = new THREE.CylinderGeometry(0.022, 0.018, 0.14, 10);
-    const finger = new THREE.Mesh(fingerGeo, skinMat);
-    finger.position.set(0, -0.25, 0.025);
-    rForearmGroup.add(finger);
-
-    // Glowing cyan finger ring / precision cursor tip
-    const fingerTipGeo = new THREE.SphereGeometry(0.024, 10, 10);
-    const fingerTip = new THREE.Mesh(fingerTipGeo, cyanGlowMat);
-    fingerTip.position.set(0, -0.32, 0.025);
-    rForearmGroup.add(fingerTip);
-
-    // (G) Left Arm (Casual Rest)
+    // 2. Left Arm (Natural Resting Stance)
     const leftArmGroup = new THREE.Group();
     leftArmGroup.position.set(-0.33, 0.14, 0);
     bodyGroup.add(leftArmGroup);
@@ -367,7 +348,7 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
     lHand.position.set(-0.10, -0.21, 0.06);
     leftArmGroup.add(lHand);
 
-    // (H) Orbiting Holographic Cyber Ring
+    // (G) Orbiting Holographic Cyber Ring
     const holoRingGeo = new THREE.TorusGeometry(0.72, 0.012, 8, 32);
     const holoRingMat = new THREE.MeshBasicMaterial({
       color: 0x22d3ee,
@@ -419,18 +400,14 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
       headGroup.rotation.x = curRotX + 0.03;
       headGroup.rotation.z = Math.sin(elapsedTime * 1.8) * 0.02;
 
-      // (c) Rhythmic pointing gesture animation (Right Hand points down excitedly!)
-      const pointingCycle = Math.sin(elapsedTime * 4.5);
-      rightArmGroup.rotation.x = 0.30 + pointingCycle * 0.16;
-      rForearmGroup.rotation.x = -0.22 + pointingCycle * 0.10;
-
-      // (d) Left arm subtle breathing swing
+      // (c) Natural breathing arm swing
+      rightArmGroup.rotation.z = -Math.sin(elapsedTime * 2.0) * 0.05;
       leftArmGroup.rotation.z = Math.sin(elapsedTime * 2.0) * 0.05;
 
-      // (e) Orbiting Holographic Ring Rotation
+      // (d) Orbiting Holographic Ring Rotation
       holoRing.rotation.z = elapsedTime * 0.75;
 
-      // (f) Blinking cycle
+      // (e) Blinking cycle
       blinkTimer += 0.016;
       if (blinkTimer > 3.2) {
         eyeGroup.scale.y = 0.1;
@@ -440,7 +417,7 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
         }
       }
 
-      // (g) Jump physics on click/hover
+      // (f) Jump physics on click/hover
       if (jumpY > 0 || jumpVel !== 0) {
         jumpY += jumpVel;
         jumpVel -= 0.016;
@@ -464,8 +441,35 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
     };
   }, [prefersReduced]);
 
+  // Section dynamic titles & cues
+  const getSectionDialogue = () => {
+    switch (currentSection) {
+      case "whoami":
+        return {
+          title: "Workstation Active",
+          cue: "Next: CAMPLX & Projects",
+          arrow: "↓",
+        };
+      case "project-experience":
+        return {
+          title: "Primary Build: CAMPLX",
+          cue: "Back to Overview",
+          arrow: "↑",
+        };
+      case "hero":
+      default:
+        return {
+          title: "Overview",
+          cue: "Scroll down for Workstation",
+          arrow: "↓",
+        };
+    }
+  };
+
+  const dialogue = getSectionDialogue();
+
   return (
-    <div
+    <aside
       ref={containerRef}
       data-cursor="clickable"
       onClick={handleClick}
@@ -479,29 +483,29 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
           handleClick();
         }
       }}
-      aria-label="Interactive 3D animated character guide. Click to scroll down to workstation and projects"
-      className="group relative inline-flex items-center gap-3 select-none cursor-pointer py-1 -translate-y-2.5 sm:-translate-y-3 transition-transform duration-300 hover:scale-[1.02] focus-visible:outline-2 focus-visible:outline-[var(--focus-ring)] rounded-xs"
+      aria-label={`Guide Bot: ${dialogue.title}. ${dialogue.cue}`}
+      className="fixed bottom-4 right-4 sm:bottom-6 sm:right-8 z-40 group inline-flex items-center gap-2.5 select-none cursor-pointer p-1 rounded-full transition-all duration-300 hover:scale-[1.04] focus-visible:outline-2 focus-visible:outline-[var(--focus-ring)]"
     >
-      {/* Speech Bubble / Dialogue Balloon */}
+      {/* Speech Bubble / Dynamic Waypoint Dialogue Balloon */}
       <div
         className={`relative px-3.5 py-1.5 rounded-full border transition-all duration-300 ${
           hovered
-            ? "border-[var(--accent)] bg-[var(--surface-raised)] shadow-[0_0_14px_var(--accent-glow)] scale-[1.02]"
-            : "border-[var(--hairline-strong)] bg-[var(--surface-raised)]/90 shadow-xs"
+            ? "border-[var(--accent)] bg-[var(--surface-raised)] shadow-[0_0_16px_var(--accent-glow)] scale-[1.02]"
+            : "border-[var(--hairline-strong)] bg-[var(--surface-raised)]/95 shadow-md"
         } backdrop-blur-md text-left`}
       >
         <div className="flex items-center gap-2 font-mono text-[11px] text-[var(--text)]">
           <span className="h-1.5 w-1.5 rounded-full bg-[var(--accent)] animate-pulse shadow-[0_0_6px_var(--accent)]" aria-hidden="true" />
           <span className="font-semibold tracking-tight text-[var(--accent)]">
-            Scroll down for workstation &amp; projects!
+            {dialogue.cue}
           </span>
           <span
             className={`inline-block font-bold text-[var(--accent)] transition-transform duration-200 ${
-              hovered ? "translate-y-0.5 scale-110" : "animate-anime-pointer"
+              hovered ? "scale-125" : "animate-anime-pointer"
             }`}
             aria-hidden="true"
           >
-            ↓
+            {dialogue.arrow}
           </span>
         </div>
 
@@ -512,8 +516,8 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
         />
       </div>
 
-      {/* Real-time WebGL 3D Animated Character Canvas (Full body, uncropped, floating, 5% reduced size) */}
-      <div className="relative shrink-0 h-15 w-15 sm:h-[74px] sm:w-[74px] flex items-center justify-center">
+      {/* Real-time WebGL 3D Animated Character Canvas (Full body, uncropped, floating, following user down) */}
+      <div className="relative shrink-0 h-14 w-14 sm:h-16 sm:w-16 flex items-center justify-center">
         {/* Luminous Cyan/Teal Halo */}
         <div
           aria-hidden="true"
@@ -523,19 +527,11 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
         {/* 3D WebGL Canvas */}
         <canvas
           ref={canvasRef}
-          width={200}
-          height={200}
+          width={180}
+          height={180}
           className="relative w-full h-full object-contain filter drop-shadow-[0_4px_12px_rgba(0,0,0,0.35)] transition-transform duration-300 group-hover:scale-105"
         />
-
-        {/* Small Pointing Hand Indicator Badge */}
-        <span
-          aria-hidden="true"
-          className="absolute bottom-0 right-0 h-4.5 w-4.5 rounded-full bg-[var(--accent)] text-[#0a0f14] flex items-center justify-center text-[9px] font-extrabold shadow-xs border border-[var(--surface)] animate-anime-pointer"
-        >
-          ↓
-        </span>
       </div>
-    </div>
+    </aside>
   );
 }

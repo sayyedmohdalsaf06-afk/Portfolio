@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
-import { AnimeCharacter3D } from "./anime-character-3d";
 
 /**
  * Hero — Big Animated Centered Identity Hero (V2).
@@ -10,7 +9,6 @@ import { AnimeCharacter3D } from "./anime-character-3d";
  * Features:
  *  - Massive, kinetic animated name: "MOHD ALSAF" in all-caps display typography.
  *  - Centered technical builder badges, core thesis, and dual action cues.
- *  - 3D Animated Interactive Anime Character mascot scroll guide (WebGL / Three.js).
  *  - Smooth spatial recession physics on scroll.
  *
  * @see docs/02-identity-first.md
@@ -136,9 +134,12 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Bottom Viewport Anchor & 3D Animated Character Guide */}
-      <div className="pt-3 pb-1 border-t border-[var(--hairline)] flex flex-col sm:flex-row items-center justify-between gap-3 font-mono text-[11px] text-[var(--muted)] select-none">
-        <AnimeCharacter3D onScrollDown={scrollToIdentity} />
+      {/* Bottom Viewport Anchor & Scroll Indicator */}
+      <div className="pt-3 pb-1 border-t border-[var(--hairline)] flex items-center justify-between font-mono text-[11px] text-[var(--muted)] select-none">
+        <div className="flex items-center gap-2">
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--accent)] animate-pulse" aria-hidden="true" />
+          <span>SCROLL DOWN FOR WORKSTATION &amp; PROJECTS</span>
+        </div>
         <span className="hidden sm:inline text-[10px] tracking-wider font-mono">SEC // 01 · OVERVIEW</span>
       </div>
     </section>
