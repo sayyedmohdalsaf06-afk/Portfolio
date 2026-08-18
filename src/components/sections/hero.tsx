@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useReducedMotion } from "@/hooks/use-reduced-motion";
+import { AnimeScrollMascot } from "./anime-scroll-mascot";
 
 /**
  * Hero — Big Animated Centered Identity Hero (V2).
@@ -9,6 +10,7 @@ import { useReducedMotion } from "@/hooks/use-reduced-motion";
  * Features:
  *  - Massive, kinetic animated name: "MOHD ALSAF" in all-caps display typography.
  *  - Centered technical builder badges, core thesis, and dual action cues.
+ *  - Animated Anime Chibi Developer Mascot scroll guide.
  *  - Smooth spatial recession physics on scroll.
  *
  * @see docs/02-identity-first.md
@@ -47,7 +49,7 @@ export function Hero() {
   }, [prefersReduced]);
 
   const scrollToIdentity = () => {
-    const el = document.getElementById("identity-card-section");
+    const el = document.getElementById("whoami") || document.getElementById("identity-card-section");
     if (el) {
       el.scrollIntoView({ behavior: "smooth" });
     }
@@ -134,12 +136,9 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Bottom Viewport Anchor & Scroll Indicator */}
-      <div className="pt-4 border-t border-[var(--hairline)] flex items-center justify-between font-mono text-[11px] text-[var(--muted)] select-none">
-        <div className="flex items-center gap-2">
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-[var(--accent)] animate-pulse" aria-hidden="true" />
-          <span>SCROLL DOWN FOR WORKSTATION & PROJECTS</span>
-        </div>
+      {/* Bottom Viewport Anchor & Animated Anime Mascot Guide */}
+      <div className="pt-4 border-t border-[var(--hairline)] flex flex-col sm:flex-row items-center justify-between gap-4 font-mono text-[11px] text-[var(--muted)] select-none">
+        <AnimeScrollMascot onScrollDown={scrollToIdentity} />
         <span className="hidden sm:inline text-[10px] tracking-wider font-mono">SEC // 01 · OVERVIEW</span>
       </div>
     </section>

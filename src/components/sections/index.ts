@@ -10,3 +10,4 @@ export { BuildNotes } from "./build-notes";
 export { Observations } from "./observations";
 export { KnowledgeArchive } from "./knowledge-archive";
 export { Contact } from "./contact";
+export { AnimeScrollMascot } from "./anime-scroll-mascot";
