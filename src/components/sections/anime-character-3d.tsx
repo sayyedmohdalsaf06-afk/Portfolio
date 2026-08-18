@@ -30,11 +30,11 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
     if (!canvas) return;
 
     // 1. Scene & Camera Setup
-    const width = 160;
-    const height = 160;
+    const width = 140;
+    const height = 140;
     const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(36, width / height, 0.1, 100);
-    camera.position.set(0, 0.14, 2.45);
+    const camera = new THREE.PerspectiveCamera(34, width / height, 0.1, 100);
+    camera.position.set(0, 0.22, 2.25);
 
     const renderer = new THREE.WebGLRenderer({
       canvas,
@@ -512,29 +512,15 @@ export function AnimeCharacter3D({ onScrollDown }: AnimeCharacter3DProps) {
         />
       </div>
 
-      {/* Real-time WebGL 3D Animated Character Canvas */}
-      <div className="relative shrink-0 h-12 w-12 sm:h-14 sm:w-14 flex items-center justify-center">
-        {/* Luminous Cyan/Teal Halo */}
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 rounded-full bg-[radial-gradient(circle,var(--accent)_0%,transparent_70%)] opacity-30 blur-sm pointer-events-none animate-anime-pulse"
-        />
-
+      {/* Real-time WebGL 3D Animated Character Badge */}
+      <div className="relative shrink-0 h-9 w-9 sm:h-10 sm:w-10 rounded-full border-2 border-[var(--accent)] bg-[#0d141e] overflow-hidden shadow-md transition-transform duration-300 group-hover:scale-110 flex items-center justify-center">
         {/* 3D WebGL Canvas */}
         <canvas
           ref={canvasRef}
-          width={160}
-          height={160}
-          className="relative w-full h-full object-contain filter drop-shadow-[0_2px_8px_rgba(0,0,0,0.4)] transition-transform duration-300 group-hover:scale-105"
+          width={140}
+          height={140}
+          className="relative w-full h-full object-cover filter drop-shadow-[0_2px_6px_rgba(0,0,0,0.3)]"
         />
-
-        {/* Small Pointing Hand Indicator Badge */}
-        <span
-          aria-hidden="true"
-          className="absolute bottom-0 right-0 h-4 w-4 rounded-full bg-[var(--accent)] text-[#0a0f14] flex items-center justify-center text-[9px] font-extrabold shadow-xs border border-[var(--surface)] animate-anime-pointer"
-        >
-          ↓
-        </span>
       </div>
     </div>
   );
