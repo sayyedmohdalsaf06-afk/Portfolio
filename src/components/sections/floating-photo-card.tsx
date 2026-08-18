@@ -303,12 +303,12 @@ export function FloatingPhotoCard() {
               <span className="text-[var(--text)] font-medium">Pune, India</span>
             </div>
             <div className="flex items-center justify-between border-b border-[var(--hairline)] pb-2">
-              <span className="text-[var(--muted)] text-[10px] uppercase">STATUS</span>
-              <span className="text-[var(--accent-ink)] font-semibold">Active · Phase 1 &amp; 2</span>
+              <span className="text-[var(--muted)] text-[10px] uppercase">PRIMARY BUILD</span>
+              <span className="text-[var(--text)] font-semibold">CAMPLX</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-[var(--muted)] text-[10px] uppercase">PRIMARY BUILD</span>
-              <span className="text-[var(--accent-ink)] font-semibold">CAMPLX</span>
+              <span className="text-[var(--muted)] text-[10px] uppercase">STATUS</span>
+              <span className="text-[var(--accent-ink)] font-semibold">Active · Phase 1 &amp; 2</span>
             </div>
           </div>
 
