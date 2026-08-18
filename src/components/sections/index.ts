@@ -1,3 +1,12 @@
-/** Page sections barrel for Portfolio v2. */
 export { Hero } from "./hero";
+export { IdentityCard } from "./identity-card";
+export { FloatingPhotoCard } from "./floating-photo-card";
+export { IdentityTerminal } from "./identity-terminal";
 export { ProjectExperience } from "./project-experience";
+export { Projects } from "./projects";
+export { Timeline } from "./timeline";
+export { Lab } from "./lab";
+export { BuildNotes } from "./build-notes";
+export { Observations } from "./observations";
+export { KnowledgeArchive } from "./knowledge-archive";
+export { Contact } from "./contact";

@@ -15,7 +15,12 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${fontSans.variable} ${fontMono.variable}`}>
+    <html
+      lang="en"
+      data-theme="dark"
+      suppressHydrationWarning
+      className={`${fontSans.variable} ${fontMono.variable}`}
+    >
       <head>
         {/* Fontshare General Sans CDN for high-fidelity typography */}
         <link rel="preconnect" href="https://api.fontshare.com" crossOrigin="anonymous" />
@@ -43,7 +48,7 @@ export default function RootLayout({
             Skip to content
           </a>
 
-          <main id="main">{children}</main>
+          <main id="main" className="relative z-10">{children}</main>
         </AppProviders>
       </body>
     </html>

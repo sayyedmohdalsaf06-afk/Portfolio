@@ -3,54 +3,50 @@
 /* =============================================================================
    MOHD ALSAF — PORTFOLIO V2 ("IN FOCUS") DESIGN TOKENS & SYSTEM
    Governed by: docs/02-identity-first.md, 03-interaction-philosophy.md, 04-visual-identity.md
+   Default Ambient Environment: Graphite (#0E0F12)
+   Alternate Mode: Paper & Ink (#F4F1EA)
    ============================================================================= */
 
 :root {
-  /* Light "Paper & Ink" is the default */
-  --surface: #f4f1ea;
-  --surface-raised: #ffffff;
-  --surface-subtle: #ece8df;
-  --text: #16161a;
-  --muted: #6b6b72;
-  --hairline: rgba(22, 22, 26, 0.12);
-  --hairline-strong: rgba(22, 22, 26, 0.20);
-  --tick: rgba(22, 22, 26, 0.14);
+  /* Default Ambient Environment: Graphite */
+  --surface: #0e0f12;
+  --surface-raised: #15171c;
+  --surface-subtle: #111216;
+  --text: #ede9e0;
+  --muted: #8e909d;
+  --hairline: rgba(237, 233, 224, 0.08);
+  --hairline-strong: rgba(237, 233, 224, 0.16);
+  --tick: rgba(237, 233, 224, 0.12);
   --accent: #2a46e0;
-  --accent-ink: #2a46e0;
-  --focus-ring: #2a46e0;
+  --accent-ink: #8aa0ff;
+  --focus-ring: #8aa0ff;
+
+  --terminal-bg: #090a0d;
+  --terminal-chrome: #121317;
+  --terminal-border: rgba(237, 233, 224, 0.10);
+  --terminal-hairline: rgba(237, 233, 224, 0.06);
 
   --arrival-ms: 720ms;
   --arrival-ease: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    --surface: #17181c;
-    --surface-raised: #222329;
-    --surface-subtle: #1e1f24;
-    --text: #ede9e0;
-    --muted: #9a9ba8;
-    --hairline: rgba(237, 233, 224, 0.12);
-    --hairline-strong: rgba(237, 233, 224, 0.22);
-    --tick: rgba(237, 233, 224, 0.14);
-    --accent: #2a46e0;
-    --accent-ink: #8aa0ff;
-    --focus-ring: #8aa0ff;
-  }
-}
-
 [data-theme="dark"] {
-  --surface: #17181c;
-  --surface-raised: #222329;
-  --surface-subtle: #1e1f24;
+  --surface: #0e0f12;
+  --surface-raised: #15171c;
+  --surface-subtle: #111216;
   --text: #ede9e0;
-  --muted: #9a9ba8;
-  --hairline: rgba(237, 233, 224, 0.12);
-  --hairline-strong: rgba(237, 233, 224, 0.22);
-  --tick: rgba(237, 233, 224, 0.14);
+  --muted: #8e909d;
+  --hairline: rgba(237, 233, 224, 0.08);
+  --hairline-strong: rgba(237, 233, 224, 0.16);
+  --tick: rgba(237, 233, 224, 0.12);
   --accent: #2a46e0;
   --accent-ink: #8aa0ff;
   --focus-ring: #8aa0ff;
+
+  --terminal-bg: #090a0d;
+  --terminal-chrome: #121317;
+  --terminal-border: rgba(237, 233, 224, 0.10);
+  --terminal-hairline: rgba(237, 233, 224, 0.06);
 }
 
 [data-theme="light"] {
@@ -59,12 +55,17 @@
   --surface-subtle: #ece8df;
   --text: #16161a;
   --muted: #6b6b72;
-  --hairline: rgba(22, 22, 26, 0.12);
-  --hairline-strong: rgba(22, 22, 26, 0.20);
-  --tick: rgba(22, 22, 26, 0.14);
+  --hairline: rgba(22, 22, 26, 0.10);
+  --hairline-strong: rgba(22, 22, 26, 0.18);
+  --tick: rgba(22, 22, 26, 0.12);
   --accent: #2a46e0;
   --accent-ink: #2a46e0;
   --focus-ring: #2a46e0;
+
+  --terminal-bg: #111215;
+  --terminal-chrome: #18191e;
+  --terminal-border: rgba(22, 22, 26, 0.14);
+  --terminal-hairline: rgba(22, 22, 26, 0.08);
 }
 
 @theme {
@@ -87,7 +88,7 @@
   box-sizing: border-box;
 }
 
-html, body {
+html {
   min-height: 100%;
   background-color: var(--surface);
   color: var(--text);
@@ -97,42 +98,61 @@ html, body {
   transition: background-color 200ms ease, color 200ms ease;
 }
 
+body {
+  min-height: 100%;
+  background-color: transparent;
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+
 /* ============================================================
-   BACKGROUND GRID STYLES
+   SPATIAL BACKGROUND LAYERS (Restrained & Quiet)
    ============================================================ */
-.field, .field-near {
+
+/* Layer 1: Far sparse structural grid */
+.spatial-far {
   position: absolute;
-  inset: -40px;
+  inset: -60px;
   pointer-events: none;
   background-image:
-    repeating-linear-gradient(to right, var(--hairline) 0, var(--hairline) 1px, transparent 1px, transparent 96px),
-    repeating-linear-gradient(to bottom, var(--hairline) 0, var(--hairline) 1px, transparent 1px, transparent 96px);
+    repeating-linear-gradient(to right, var(--hairline) 0, var(--hairline) 1px, transparent 1px, transparent 144px),
+    repeating-linear-gradient(to bottom, var(--hairline) 0, var(--hairline) 1px, transparent 1px, transparent 144px);
   background-position: center center;
+  opacity: 0.65;
   will-change: transform;
 }
 
-.field-near {
-  background-image:
-    repeating-linear-gradient(to right, var(--hairline-strong) 0, var(--hairline-strong) 1px, transparent 1px, transparent 96px),
-    repeating-linear-gradient(to bottom, var(--hairline-strong) 0, var(--hairline-strong) 1px, transparent 1px, transparent 96px);
-  opacity: 0;
-  -webkit-mask-image: radial-gradient(circle 200px at var(--mx, -300px) var(--my, -300px), #000 0%, rgba(0,0,0,0.35) 55%, transparent 72%);
-  mask-image: radial-gradient(circle 200px at var(--mx, -300px) var(--my, -300px), #000 0%, rgba(0,0,0,0.35) 55%, transparent 72%);
-  transition: opacity 120ms linear;
+/* Layer 2: Mid coordinate points */
+.spatial-mid {
+  position: absolute;
+  inset: -60px;
+  pointer-events: none;
+  background-image: radial-gradient(circle 1.5px, var(--hairline-strong) 100%, transparent 100%);
+  background-size: 288px 288px;
+  background-position: center center;
+  opacity: 0.85;
+  will-change: transform;
 }
 
-.field-near.active {
+/* Layer 3: Near interactive cursor illumination */
+.spatial-near {
+  position: absolute;
+  inset: -60px;
+  pointer-events: none;
+  background-image:
+    repeating-linear-gradient(to right, var(--hairline-strong) 0, var(--hairline-strong) 1px, transparent 1px, transparent 144px),
+    repeating-linear-gradient(to bottom, var(--hairline-strong) 0, var(--hairline-strong) 1px, transparent 1px, transparent 144px);
+  background-position: center center;
+  opacity: 0;
+  -webkit-mask-image: radial-gradient(circle 240px at var(--mx, -400px) var(--my, -400px), #000 0%, rgba(0,0,0,0.3) 50%, transparent 75%);
+  mask-image: radial-gradient(circle 240px at var(--mx, -400px) var(--my, -400px), #000 0%, rgba(0,0,0,0.3) 50%, transparent 75%);
+  transition: opacity 160ms linear;
+  will-change: transform;
+}
+
+.spatial-near.active {
   opacity: 1;
 }
-
-.ticks {
-  display: flex;
-  gap: 10px;
-  pointer-events: none;
-  opacity: 0.9;
-}
-.ticks .tick { width: 1px; height: 7px; background: var(--tick); }
-.ticks .tick.major { height: 12px; }
 
 /* ============================================================
    CUSTOM CURSOR INSTRUMENT
@@ -238,6 +258,13 @@ body.custom-cursor * { cursor: none !important; }
   0%   { opacity: 0; transform: scale(1.18); }
   35%  { opacity: 1; transform: scale(1.0); }
   100% { opacity: 0; transform: scale(1.0); }
+}
+
+@keyframes scanline {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  15%  { opacity: 0.8; }
+  85%  { opacity: 0.8; }
+  100% { transform: translateY(220%); opacity: 0; }
 }
 
 .font-annotation {

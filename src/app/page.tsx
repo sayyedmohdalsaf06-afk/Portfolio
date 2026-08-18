@@ -1,27 +1,37 @@
 import { Hero } from "@/components/sections/hero";
+import { FloatingPhotoCard } from "@/components/sections/floating-photo-card";
+import { IdentityTerminal } from "@/components/sections/identity-terminal";
 import { ProjectExperience } from "@/components/sections/project-experience";
-import { IdentityAnchor } from "@/components/system/identity-anchor";
+import { TopNavigation } from "@/components/system/top-navigation";
 
 /**
  * Portfolio v2 ("In Focus") — Main Spatial Workspace.
- * 2-Column Split Architecture:
- * - Left: Persistent sticky identity anchor
- * - Right: Continuous scrolling stream of real work (Hero -> CampusSwap AI)
- * @see docs/02-identity-first.md
- * @see docs/03-interaction-philosophy.md
+ *
+ * Layout Structure:
+ * - Top: Modern System Navigation (Status, Waypoints, Theme Toggle)
+ * - Main 2-Column Split:
+ *   - Left: 3D Floating Identity Photo Card (Tactile Builder Dossier)
+ *   - Right: Stream of real work (Centered Big Name Hero -> Terminal -> CAMPLX)
  */
 export default function HomePage() {
   return (
-    <div className="relative min-h-screen z-1 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 lg:py-10">
-      <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
-        {/* Left Column: Persistent Sticky Identity Anchor */}
-        <IdentityAnchor />
+    <div className="relative min-h-screen z-1 flex flex-col">
+      {/* Top Workspace System Navigation Bar */}
+      <TopNavigation />
 
-        {/* Right Column: Continuous Scrolling Work Stream */}
-        <main className="flex-1 min-w-0 w-full space-y-12">
-          <Hero />
-          <ProjectExperience />
-        </main>
+      {/* Main Split Content Area */}
+      <div className="max-w-7xl w-full mx-auto px-5 sm:px-8 lg:px-12 py-8 lg:py-12 flex-1">
+        <div className="flex flex-col lg:flex-row gap-10 lg:gap-14 items-start">
+          {/* Left Column: 3D Floating Photo Card */}
+          <FloatingPhotoCard />
+
+          {/* Right Column: Centered Big Name Hero + Terminal + CAMPLX */}
+          <main className="flex-1 min-w-0 w-full space-y-16">
+            <Hero />
+            <IdentityTerminal />
+            <ProjectExperience />
+          </main>
+        </div>
       </div>
     </div>
   );

@@ -38,9 +38,9 @@ export const SECTION_META: Record<
 > = {
   hero: { label: "Overview", title: "Mohd Alsaf", eyebrow: "IN FOCUS" },
   "project-experience": {
-    label: "CampusSwap AI",
-    title: "CampusSwap AI",
-    eyebrow: "FLAGSHIP EXPLORATION",
+    label: "CAMPLX",
+    title: "CAMPLX",
+    eyebrow: "FLAGSHIP BUILD",
   },
   projects: {
     label: "Projects",
